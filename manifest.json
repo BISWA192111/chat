@@ -3,6 +3,7 @@
   "short_name": "Calc",
   "description": "A sleek scientific calculator",
   "start_url": "/",
+  "id": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
