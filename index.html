@@ -166,6 +166,48 @@
     .msg-delete { background:none; border:none; cursor:pointer; font-size:13px; padding:2px 4px; border-radius:6px; color:var(--subtext); line-height:1; }
     .msg-delete:hover { color:var(--red); background:rgba(239,68,68,0.12); }
 
+    /* ─── LINKS IN MESSAGES ─── */
+    .msg-link { color:#7dd3fc; text-decoration:underline; text-decoration-color:rgba(125,211,252,0.4); word-break:break-all; transition:color 0.15s; cursor:pointer; }
+    .msg-link:hover { color:#bae6fd; text-decoration-color:#bae6fd; }
+    .msg-wrap.me .msg-link { color:#c4b5fd; text-decoration-color:rgba(196,181,253,0.4); }
+    .msg-wrap.me .msg-link:hover { color:#ddd6fe; text-decoration-color:#ddd6fe; }
+
+    /* ─── VOICE MESSAGE ─── */
+    .msg-voice { display:flex; align-items:center; gap:10px; padding:2px 0; }
+    .voice-play-btn { width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; transition:transform 0.15s, filter 0.15s; }
+    .msg-wrap.me   .voice-play-btn { background:rgba(255,255,255,0.25); }
+    .msg-wrap.them .voice-play-btn { background:var(--chat-accent); }
+    .voice-play-btn:hover { filter:brightness(1.2); transform:scale(1.08); }
+    .voice-waveform { flex:1; height:32px; position:relative; display:flex; align-items:center; gap:2px; overflow:hidden; }
+    .voice-bar { width:3px; border-radius:2px; background:rgba(255,255,255,0.4); flex-shrink:0; transition:background 0.15s; }
+    .voice-bar.active { background:rgba(255,255,255,0.9); }
+    .voice-duration { font-size:11px; color:rgba(255,255,255,0.7); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+    /* ─── MIC BUTTON ─── */
+    #mic-btn { width:50px; height:50px; border:1.5px solid var(--chat-border); border-radius:14px; color:var(--subtext); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s,color 0.15s,border-color 0.15s,transform 0.1s,box-shadow 0.2s; background:var(--chat-panel); }
+    #mic-btn:hover { background:var(--chat-surface); color:var(--chat-accent2); border-color:var(--chat-accent); }
+    #mic-btn.recording { background:rgba(239,68,68,0.15); border-color:var(--red); color:var(--red); animation:micPulse 1s ease-in-out infinite; box-shadow:0 0 0 0 rgba(239,68,68,0.5); }
+    @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+    #mic-btn:active { transform:scale(0.9); }
+
+    /* ─── RECORDING STATUS BAR ─── */
+    #recording-bar { display:none; align-items:center; gap:10px; background:rgba(239,68,68,0.1); border-top:1px solid rgba(239,68,68,0.3); padding:8px 16px; }
+    #recording-bar.visible { display:flex; }
+    .rec-dot { width:8px; height:8px; border-radius:50%; background:var(--red); animation:blink 1s step-start infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .rec-label { font-size:13px; color:var(--red); font-weight:600; flex:1; }
+    .rec-time { font-size:13px; color:var(--subtext); font-variant-numeric:tabular-nums; }
+    #rec-cancel { background:none; border:none; color:var(--subtext); font-size:18px; cursor:pointer; padding:4px; border-radius:6px; line-height:1; }
+    #rec-cancel:hover { color:var(--red); }
+
+    /* ─── PRIVACY LOCK SCREEN ─── */
+    #privacy-overlay { position:fixed; inset:0; background:rgba(13,13,20,0.98); z-index:1000; display:none; flex-direction:column; align-items:center; justify-content:center; gap:20px; backdrop-filter:blur(20px); }
+    #privacy-overlay.show { display:flex; }
+    .privacy-icon { font-size:56px; animation:lockBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes lockBounce { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+    .privacy-title { font-size:20px; font-weight:700; color:var(--text); }
+    .privacy-sub { font-size:13px; color:var(--subtext); text-align:center; line-height:1.6; max-width:260px; }
+
     .sys-msg { text-align:center; font-size:12px; color:var(--subtext); padding:4px 0; }
 
     /* ─── REACTIONS ─── */
@@ -190,7 +232,7 @@
     #attach-btn { width:50px; height:50px; background:var(--chat-panel); border:1.5px solid var(--chat-border); border-radius:14px; color:var(--subtext); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s,color 0.15s,border-color 0.15s; }
     #attach-btn:hover { background:var(--chat-surface); color:var(--chat-accent2); border-color:var(--chat-accent); }
     #attach-btn:active { transform:scale(0.93); }
-    #send-btn { width:50px; height:50px; background:linear-gradient(135deg,var(--chat-accent),var(--chat-accent2)); border:none; border-radius:14px; color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:filter 0.15s,transform 0.1s,box-shadow 0.15s; box-shadow:0 4px 16px rgba(124,106,247,0.35); }
+    #send-btn { width:50px; height:50px; background:linear-gradient(135deg,var(--chat-accent),var(--chat-accent2)); border:none; border-radius:14px; color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:filter 0.15s,transform 0.1s,box-shadow 0.15s; box-shadow:0 4px 16px rgba(124,106,247,0.35); }
     #send-btn:hover  { filter:brightness(1.12); box-shadow:0 6px 22px rgba(124,106,247,0.5); }
     #send-btn:active { transform:scale(0.93); }
 
@@ -486,7 +528,6 @@
         <div class="chat-header-name" id="peer-name">—</div>
         <div class="chat-header-sub" id="peer-status">online</div>
       </div>
-      <button class="hdr-btn" id="notif-toggle" title="Notifications" onclick="toggleNotifications()">🔔</button>
       <button class="hdr-btn" title="Voice call" onclick="initiateCall('audio')">📞</button>
       <button class="hdr-btn" title="Video call" onclick="initiateCall('video')">🎥</button>
       <button class="hdr-btn hdr-close" onclick="closeChatOverlay()">✕</button>
@@ -504,10 +545,17 @@
       <button id="reply-cancel" onclick="cancelReply()">✕</button>
     </div>
 
+    <div id="recording-bar">
+      <div class="rec-dot"></div>
+      <div class="rec-label">Recording…</div>
+      <div class="rec-time" id="rec-time">0:00</div>
+      <button id="rec-cancel" onclick="cancelRecording()" title="Cancel">✕</button>
+    </div>
     <div id="chat-input-area">
       <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(event)">
       <button id="attach-btn" onclick="document.getElementById('file-input').click()" title="Attach file">📎</button>
       <textarea id="msg-input" placeholder="Type a message…" rows="1" maxlength="1000"></textarea>
+      <button id="mic-btn" title="Hold to record voice message">🎙️</button>
       <button id="send-btn" onclick="sendMessage()">➤</button>
     </div>
   </div>
@@ -598,6 +646,13 @@
   <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA..." type="audio/wav">
 </audio>
 
+<!-- Privacy lock overlay -->
+<div id="privacy-overlay">
+  <div class="privacy-icon">🔒</div>
+  <div class="privacy-title">Session Locked</div>
+  <div class="privacy-sub">You were away for more than 3 minutes. Returning to calculator for privacy.</div>
+</div>
+
 <script>
 /* ════════════════════════════════════════
    CALCULATOR
@@ -672,6 +727,168 @@ let visibilityObserver = null;
 let asCurrentMsg = null;
 
 /* ════════════════════════════════════════
+   PRIVACY LOCK — auto-lock after 3 min away
+════════════════════════════════════════ */
+let privacyTimer = null;
+const PRIVACY_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+
+function startPrivacyTimer() {
+  clearPrivacyTimer();
+  if (!me) return;
+  privacyTimer = setTimeout(() => {
+    triggerPrivacyLock();
+  }, PRIVACY_TIMEOUT_MS);
+}
+
+function clearPrivacyTimer() {
+  clearTimeout(privacyTimer);
+  privacyTimer = null;
+}
+
+function triggerPrivacyLock() {
+  if (!me) return; // already logged out
+  const overlay = document.getElementById('privacy-overlay');
+  overlay.classList.add('show');
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    closeChatOverlay();
+  }, 2200);
+}
+
+// Listen for visibility changes to start/stop the privacy timer
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // User switched tab or minimised — start countdown
+    startPrivacyTimer();
+  } else {
+    // User came back before timeout — cancel
+    clearPrivacyTimer();
+  }
+});
+
+// Also detect window blur (alt-tab, window minimise without tab-switch)
+window.addEventListener('blur',  () => { if (me) startPrivacyTimer(); });
+window.addEventListener('focus', () => { clearPrivacyTimer(); });
+
+/* ════════════════════════════════════════
+   VOICE RECORDING
+════════════════════════════════════════ */
+let mediaRecorder = null;
+let audioChunks   = [];
+let recTimerInterval = null;
+let recSeconds = 0;
+let isRecording = false;
+
+function startRecording() {
+  if (isRecording || !me) return;
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    isRecording = true;
+    audioChunks = [];
+    recSeconds  = 0;
+    const micBtn = document.getElementById('mic-btn');
+    micBtn.classList.add('recording');
+    micBtn.textContent = '⏹️';
+    document.getElementById('recording-bar').classList.add('visible');
+    document.getElementById('rec-time').textContent = '0:00';
+    recTimerInterval = setInterval(() => {
+      recSeconds++;
+      const m = Math.floor(recSeconds / 60);
+      const s = String(recSeconds % 60).padStart(2, '0');
+      document.getElementById('rec-time').textContent = `${m}:${s}`;
+      if (recSeconds >= 120) stopRecording(true); // max 2 min
+    }, 1000);
+
+    const opts = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? { mimeType: 'audio/webm;codecs=opus' }
+      : {};
+    mediaRecorder = new MediaRecorder(stream, opts);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      if (audioChunks.length) sendVoiceMessage();
+    };
+    mediaRecorder.start(200);
+  }).catch(() => { showToast('Microphone permission denied'); });
+}
+
+function stopRecording(send = true) {
+  if (!isRecording) return;
+  isRecording = false;
+  clearInterval(recTimerInterval);
+  const micBtn = document.getElementById('mic-btn');
+  micBtn.classList.remove('recording');
+  micBtn.textContent = '🎙️';
+  document.getElementById('recording-bar').classList.remove('visible');
+  if (!send) audioChunks = [];
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  else if (!send) audioChunks = [];
+}
+
+function cancelRecording() {
+  isRecording = false;
+  clearInterval(recTimerInterval);
+  audioChunks = [];
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.ondataavailable = null;
+    mediaRecorder.onstop = null;
+    mediaRecorder.stop();
+  }
+  const micBtn = document.getElementById('mic-btn');
+  micBtn.classList.remove('recording');
+  micBtn.textContent = '🎙️';
+  document.getElementById('recording-bar').classList.remove('visible');
+}
+
+async function sendVoiceMessage() {
+  if (!db || !me || !audioChunks.length) return;
+  const mimeType = audioChunks[0]?.type || 'audio/webm';
+  const ext = mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'webm';
+  const blob = new Blob(audioChunks, { type: mimeType });
+  audioChunks = [];
+  if (blob.size < 1000) { showToast('Recording too short'); return; }
+  showToast('⏳ Sending voice message…', 15000);
+  const path = `voice_${Date.now()}.${ext}`;
+  const { error: upErr } = await db.storage.from('chat-files').upload(path, blob, { contentType: mimeType, upsert: false });
+  if (upErr) { showToast('Voice send failed ✗'); return; }
+  const { data: urlData } = db.storage.from('chat-files').getPublicUrl(path);
+  const durationSec = recSeconds || 1;
+  const { error: msgErr } = await db.from('messages').insert({
+    from: me, text: `🎙 Voice message (${durationSec}s)`, ts: Date.now(),
+    file_url: urlData.publicUrl, file_name: `voice_${durationSec}s.${ext}`,
+    file_type: mimeType, file_size: blob.size,
+    voice_duration: durationSec
+  });
+  showToast(msgErr ? 'Voice send failed ✗' : 'Voice message sent ✓');
+}
+
+// Wire mic button: single click toggles record on/off
+document.addEventListener('DOMContentLoaded', () => {
+  const micBtn = document.getElementById('mic-btn');
+  if (!micBtn) return;
+  micBtn.addEventListener('click', () => {
+    if (isRecording) stopRecording(true);
+    else startRecording();
+  });
+});
+
+/* ════════════════════════════════════════
+   LINK AUTO-DETECTION UTILITY
+════════════════════════════════════════ */
+const URL_REGEX = /(https?:\/\/[^\s<>"']+)/gi;
+function linkifyText(text) {
+  // Split text into parts, wrapping URLs in anchor tags
+  const parts = text.split(URL_REGEX);
+  return parts.map(part => {
+    if (URL_REGEX.test(part)) {
+      URL_REGEX.lastIndex = 0; // reset regex
+      const safe = part.replace(/"/g, '&quot;');
+      return `<a href="${safe}" class="msg-link" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${part}</a>`;
+    }
+    return part.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }).join('');
+}
+
+/* ════════════════════════════════════════
    OPEN / CLOSE
 ════════════════════════════════════════ */
 function openChatOverlay() {
@@ -681,6 +898,7 @@ function openChatOverlay() {
   loadProfilesForLogin();
 }
 function closeChatOverlay() {
+  clearPrivacyTimer();
   document.getElementById('chat-overlay').classList.remove('visible');
   endSession();
 }
@@ -795,11 +1013,12 @@ document.addEventListener('visibilitychange', async () => {
     const area = document.getElementById('messages-area');
     const unseenTs = [...area.querySelectorAll(`.msg-wrap[data-from="${them}"]`)]
       .filter(w => !w.dataset.seen).map(w => Number(w.dataset.ts));
-    if (!unseenTs.length) return;
-    unseenTs.forEach(ts => {
-      const w = document.querySelector(`.msg-wrap[data-ts="${ts}"]`); if(w) w.dataset.seen='1';
-    });
-    await db.from('messages').update({ seen_at: Date.now() }).in('ts', unseenTs);
+    if (unseenTs.length) {
+      unseenTs.forEach(ts => {
+        const w = document.querySelector(`.msg-wrap[data-ts="${ts}"]`); if(w) w.dataset.seen='1';
+      });
+      await db.from('messages').update({ seen_at: Date.now() }).in('ts', unseenTs);
+    }
   }
 });
 
@@ -1058,8 +1277,80 @@ function renderMsg(m) {
       const dl=document.createElement('a'); dl.className='file-dl'; dl.href=m.file_url; dl.download=m.file_name||'file'; dl.target='_blank'; dl.textContent='⬇ Download';
       info.append(name,meta,dl); card.append(icon,info); bub.appendChild(card);
     }
+  } else if (m.file_type && m.file_type.startsWith('audio/') && m.voice_duration) {
+    // Voice message — render inline player with waveform
+    const dur = m.voice_duration || 0;
+    const minutes = Math.floor(dur / 60);
+    const secs = String(dur % 60).padStart(2, '0');
+    const voiceWrap = document.createElement('div');
+    voiceWrap.className = 'msg-voice';
+    // Play button
+    const playBtn = document.createElement('button');
+    playBtn.className = 'voice-play-btn';
+    playBtn.textContent = '▶';
+    // Fake waveform bars
+    const waveDiv = document.createElement('div');
+    waveDiv.className = 'voice-waveform';
+    const barHeights = Array.from({length: 20}, () => Math.floor(Math.random() * 22) + 6);
+    barHeights.forEach((h, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'voice-bar';
+      bar.style.height = h + 'px';
+      bar.dataset.idx = i;
+      waveDiv.appendChild(bar);
+    });
+    // Duration display
+    const durEl = document.createElement('div');
+    durEl.className = 'voice-duration';
+    durEl.textContent = `${minutes}:${secs}`;
+    voiceWrap.append(playBtn, waveDiv, durEl);
+    bub.appendChild(voiceWrap);
+    // Audio playback logic
+    let audio = null;
+    let animFrame = null;
+    playBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (audio && !audio.paused) {
+        audio.pause();
+        playBtn.textContent = '▶';
+        cancelAnimationFrame(animFrame);
+        waveDiv.querySelectorAll('.voice-bar').forEach(b => b.classList.remove('active'));
+        return;
+      }
+      if (!audio) { audio = new Audio(m.file_url); }
+      audio.play().then(() => {
+        playBtn.textContent = '⏸';
+        const bars = waveDiv.querySelectorAll('.voice-bar');
+        const totalBars = bars.length;
+        const updateWave = () => {
+          if (!audio || audio.paused || audio.ended) return;
+          const progress = audio.duration ? audio.currentTime / audio.duration : 0;
+          const activeTo = Math.floor(progress * totalBars);
+          bars.forEach((b, i) => i < activeTo ? b.classList.add('active') : b.classList.remove('active'));
+          const elapsed = audio.currentTime;
+          const em = Math.floor(elapsed/60);
+          const es = String(Math.floor(elapsed%60)).padStart(2,'0');
+          durEl.textContent = `${em}:${es}`;
+          animFrame = requestAnimationFrame(updateWave);
+        };
+        animFrame = requestAnimationFrame(updateWave);
+      }).catch(() => showToast('Cannot play voice message'));
+      audio.onended = () => {
+        playBtn.textContent = '▶';
+        waveDiv.querySelectorAll('.voice-bar').forEach(b => b.classList.remove('active'));
+        durEl.textContent = `${minutes}:${secs}`;
+        cancelAnimationFrame(animFrame);
+      };
+    };
   } else {
-    bub.appendChild(document.createTextNode(m.text || ''));
+    // Text message — auto-detect links
+    const text = m.text || '';
+    if (URL_REGEX.test(text)) {
+      URL_REGEX.lastIndex = 0;
+      bub.innerHTML = linkifyText(text);
+    } else {
+      bub.appendChild(document.createTextNode(text));
+    }
   }
 
   // Footer
@@ -1490,7 +1781,6 @@ async function sendPushToRecipient(messageText) {
 ════════════════════════════════════════ */
 function toggleNotifications() {
   notifEnabled = !notifEnabled;
-  document.getElementById('notif-toggle').textContent = notifEnabled ? '🔔' : '🔕';
   showToast(notifEnabled ? 'Notifications on' : 'Notifications off');
 }
 
@@ -1615,6 +1905,8 @@ async function handleFileSelect(event) {
    SESSION END
 ════════════════════════════════════════ */
 function endSession() {
+  clearPrivacyTimer();
+  cancelRecording();
   endCall(true);
   if (rtChannel) { rtChannel.unsubscribe(); rtChannel=null; }
   if (visibilityObserver) { visibilityObserver.disconnect(); visibilityObserver=null; }
