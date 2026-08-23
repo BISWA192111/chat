@@ -780,48 +780,64 @@ let visibilityObserver = null;
 let asCurrentMsg = null;
 
 /* ════════════════════════════════════════
-   PRIVACY LOCK — auto-lock after 3 min away
+   PRIVACY LOCK — timestamp-based (immune to browser tab throttling)
+   Browsers SUSPEND setTimeout in minimised/hidden tabs, so we cannot
+   rely on a timer firing after 3 min. Instead we record WHEN the user
+   left and compare the elapsed time the moment they return.
 ════════════════════════════════════════ */
-let privacyTimer = null;
 const PRIVACY_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
-
-function startPrivacyTimer() {
-  clearPrivacyTimer();
-  if (!me) return;
-  privacyTimer = setTimeout(() => {
-    triggerPrivacyLock();
-  }, PRIVACY_TIMEOUT_MS);
-}
+let privacyHiddenAt = null; // timestamp user left, null when active
 
 function clearPrivacyTimer() {
-  clearTimeout(privacyTimer);
-  privacyTimer = null;
+  // Legacy alias — keeps endSession / closeChatOverlay working
+  privacyHiddenAt = null;
 }
 
 function triggerPrivacyLock() {
-  if (!me) return; // already logged out
+  if (!me) return;
+  privacyHiddenAt = null;
   const overlay = document.getElementById('privacy-overlay');
   overlay.classList.add('show');
+  // Use a short real-time setTimeout just for the 2.2 s overlay display
   setTimeout(() => {
     overlay.classList.remove('show');
     closeChatOverlay();
   }, 2200);
 }
 
-// Listen for visibility changes to start/stop the privacy timer
+// Primary: visibilitychange fires reliably for tab-switch AND minimise
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    // User switched tab or minimised — start countdown
-    startPrivacyTimer();
+    // User left — store timestamp
+    if (me) privacyHiddenAt = Date.now();
   } else {
-    // User came back before timeout — cancel
-    clearPrivacyTimer();
+    // User returned — check elapsed time
+    if (privacyHiddenAt && me) {
+      const elapsed = Date.now() - privacyHiddenAt;
+      if (elapsed >= PRIVACY_TIMEOUT_MS) {
+        triggerPrivacyLock();
+        return;
+      }
+    }
+    privacyHiddenAt = null;
   }
 });
 
-// Also detect window blur (alt-tab, window minimise without tab-switch)
-window.addEventListener('blur',  () => { if (me) startPrivacyTimer(); });
-window.addEventListener('focus', () => { clearPrivacyTimer(); });
+// Secondary: window blur/focus for alt-tab without tab-switch (desktop)
+let blurAt = null;
+window.addEventListener('blur', () => {
+  if (me) blurAt = Date.now();
+});
+window.addEventListener('focus', () => {
+  if (blurAt && me) {
+    const elapsed = Date.now() - blurAt;
+    if (elapsed >= PRIVACY_TIMEOUT_MS) {
+      triggerPrivacyLock();
+      return;
+    }
+  }
+  blurAt = null;
+});
 
 /* ════════════════════════════════════════
    VOICE RECORDING
