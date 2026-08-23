@@ -228,20 +228,46 @@
     .file-dl   { font-size:12px; font-weight:600; color:var(--chat-accent2); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-top:2px; }
     .file-dl:hover { text-decoration:underline; }
 
-    /* ─── ATTACH GROUP (📎 + 🎙️ stacked) ─── */
-    .attach-group { display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
-    #attach-btn, #mic-btn {
-      width:44px; height:44px; background:var(--chat-panel); border:1.5px solid var(--chat-border);
-      border-radius:12px; color:var(--subtext); font-size:18px; cursor:pointer;
-      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    /* ─── ATTACH BUTTON + POPUP TRAY ─── */
+    .attach-wrap { position:relative; flex-shrink:0; }
+    #attach-btn {
+      width:50px; height:50px; background:var(--chat-panel); border:1.5px solid var(--chat-border);
+      border-radius:14px; color:var(--subtext); font-size:22px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
       transition:background 0.15s,color 0.15s,border-color 0.15s,transform 0.1s;
     }
-    #attach-btn:hover { background:var(--chat-surface); color:var(--chat-accent2); border-color:var(--chat-accent); }
+    #attach-btn:hover  { background:var(--chat-surface); color:var(--chat-accent2); border-color:var(--chat-accent); }
     #attach-btn:active { transform:scale(0.93); }
-    #mic-btn { box-shadow:none; } /* override standalone mic styles from above */
-    #mic-btn:hover { background:var(--chat-surface); color:var(--chat-accent2); border-color:var(--chat-accent); }
-    #mic-btn.recording { background:rgba(239,68,68,0.15); border-color:var(--red); color:var(--red); animation:micPulse 1s ease-in-out infinite; }
-    #mic-btn:active { transform:scale(0.9); }
+    #attach-btn.open   { border-color:var(--chat-accent); color:var(--chat-accent2); background:var(--chat-surface); }
+
+    /* Popup tray — slides up from the attach button */
+    #attach-tray {
+      position:absolute; bottom:calc(100% + 10px); left:0;
+      background:var(--chat-surface); border:1px solid var(--chat-border);
+      border-radius:16px; padding:8px; display:none; flex-direction:column; gap:4px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.55); min-width:160px; z-index:50;
+      animation:trayIn 0.18s cubic-bezier(.34,1.56,.64,1);
+    }
+    #attach-tray.open { display:flex; }
+    @keyframes trayIn { from{opacity:0;transform:translateY(10px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+    .tray-item {
+      display:flex; align-items:center; gap:12px;
+      padding:11px 14px; border-radius:11px; border:none;
+      background:none; color:var(--text); font-family:'Inter',sans-serif;
+      font-size:14px; font-weight:500; cursor:pointer; text-align:left;
+      transition:background 0.15s;
+    }
+    .tray-item:hover { background:var(--chat-panel); }
+    .tray-item .tray-icon {
+      width:36px; height:36px; border-radius:10px; display:flex; align-items:center;
+      justify-content:center; font-size:18px; flex-shrink:0;
+    }
+    .tray-item.tray-file  .tray-icon { background:rgba(124,106,247,0.15); }
+    .tray-item.tray-voice .tray-icon { background:rgba(239,68,68,0.12); }
+    .tray-item.tray-voice.recording  { color:var(--red); }
+    .tray-item.tray-voice.recording .tray-icon { background:rgba(239,68,68,0.22); animation:micPulse 1s ease-in-out infinite; }
+    /* ─── mic-btn is invisible — only its tray-item wrapper is shown ─── */
+    #mic-btn { display:none; }
     /* ─── SEND ─── */
     #send-btn { width:50px; height:50px; background:linear-gradient(135deg,var(--chat-accent),var(--chat-accent2)); border:none; border-radius:14px; color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:filter 0.15s,transform 0.1s,box-shadow 0.15s; box-shadow:0 4px 16px rgba(124,106,247,0.35); }
     #send-btn:hover  { filter:brightness(1.12); box-shadow:0 6px 22px rgba(124,106,247,0.5); }
@@ -564,10 +590,24 @@
     </div>
     <div id="chat-input-area">
       <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(event)">
-      <div class="attach-group">
-        <button id="attach-btn" onclick="document.getElementById('file-input').click()" title="Attach file">📎</button>
-        <button id="mic-btn" title="Tap to record voice message">🎙️</button>
+      <!-- hidden mic-btn kept for JS wiring -->
+      <button id="mic-btn"></button>
+
+      <!-- Attach button + popup tray -->
+      <div class="attach-wrap">
+        <button id="attach-btn" onclick="toggleAttachMenu(event)" title="Attach">📎</button>
+        <div id="attach-tray">
+          <!-- File option -->
+          <button class="tray-item tray-file" onclick="document.getElementById('file-input').click(); closeAttachMenu()">
+            <span class="tray-icon">📎</span> File
+          </button>
+          <!-- Voice option (triggers mic-btn logic) -->
+          <button class="tray-item tray-voice" id="tray-voice-btn" onclick="handleTrayVoice()">
+            <span class="tray-icon">🎙️</span> Voice message
+          </button>
+        </div>
       </div>
+
       <textarea id="msg-input" placeholder="Type a message…" rows="1" maxlength="1000"></textarea>
       <button id="send-btn" onclick="sendMessage()">➤</button>
     </div>
@@ -798,9 +838,9 @@ function startRecording() {
     isRecording = true;
     audioChunks = [];
     recSeconds  = 0;
-    const micBtn = document.getElementById('mic-btn');
-    micBtn.classList.add('recording');
-    micBtn.textContent = '⏹️';
+    // Update tray voice button UI
+    const trayVoice = document.getElementById('tray-voice-btn');
+    if (trayVoice) { trayVoice.classList.add('recording'); trayVoice.innerHTML = '<span class="tray-icon">⏹️</span> Stop recording'; }
     document.getElementById('recording-bar').classList.add('visible');
     document.getElementById('rec-time').textContent = '0:00';
     recTimerInterval = setInterval(() => {
@@ -828,9 +868,9 @@ function stopRecording(send = true) {
   if (!isRecording) return;
   isRecording = false;
   clearInterval(recTimerInterval);
-  const micBtn = document.getElementById('mic-btn');
-  micBtn.classList.remove('recording');
-  micBtn.textContent = '🎙️';
+  // Reset tray voice button
+  const trayVoice = document.getElementById('tray-voice-btn');
+  if (trayVoice) { trayVoice.classList.remove('recording'); trayVoice.innerHTML = '<span class="tray-icon">🎙️</span> Voice message'; }
   document.getElementById('recording-bar').classList.remove('visible');
   if (!send) audioChunks = [];
   if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
@@ -846,9 +886,8 @@ function cancelRecording() {
     mediaRecorder.onstop = null;
     mediaRecorder.stop();
   }
-  const micBtn = document.getElementById('mic-btn');
-  micBtn.classList.remove('recording');
-  micBtn.textContent = '🎙️';
+  const trayVoice = document.getElementById('tray-voice-btn');
+  if (trayVoice) { trayVoice.classList.remove('recording'); trayVoice.innerHTML = '<span class="tray-icon">🎙️</span> Voice message'; }
   document.getElementById('recording-bar').classList.remove('visible');
 }
 
@@ -874,15 +913,52 @@ async function sendVoiceMessage() {
   showToast(msgErr ? 'Voice send failed ✗' : 'Voice message sent ✓');
 }
 
-// Wire mic button: single click toggles record on/off
+// Wire mic button: single click toggles record on/off (hidden btn kept for compat)
 document.addEventListener('DOMContentLoaded', () => {
   const micBtn = document.getElementById('mic-btn');
-  if (!micBtn) return;
-  micBtn.addEventListener('click', () => {
-    if (isRecording) stopRecording(true);
-    else startRecording();
-  });
+  if (micBtn) {
+    micBtn.addEventListener('click', () => {
+      if (isRecording) stopRecording(true);
+      else startRecording();
+    });
+  }
 });
+
+/* ════════════════════════════════════════
+   ATTACH MENU (popup tray)
+════════════════════════════════════════ */
+function toggleAttachMenu(e) {
+  if (e) e.stopPropagation();
+  const tray = document.getElementById('attach-tray');
+  const btn  = document.getElementById('attach-btn');
+  const isOpen = tray.classList.contains('open');
+  if (isOpen) {
+    tray.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    tray.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+function closeAttachMenu() {
+  document.getElementById('attach-tray')?.classList.remove('open');
+  document.getElementById('attach-btn')?.classList.remove('open');
+}
+// Close tray when clicking anywhere outside it
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.attach-wrap');
+  if (wrap && !wrap.contains(e.target)) closeAttachMenu();
+});
+
+function handleTrayVoice() {
+  if (isRecording) {
+    stopRecording(true);
+    closeAttachMenu();
+  } else {
+    closeAttachMenu();
+    startRecording();
+  }
+}
 
 /* ════════════════════════════════════════
    LINK AUTO-DETECTION UTILITY
