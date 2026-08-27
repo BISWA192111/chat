@@ -1122,8 +1122,8 @@
         <div class="chat-header-name" id="peer-name">—</div>
         <div class="chat-header-sub" id="peer-status">online</div>
       </div>
-      <button class="hdr-btn" id="search-toggle" title="Search messages" onclick="toggleSearch()">🔍</button>
-      <button class="hdr-btn" id="theme-toggle" title="Change theme" onclick="openThemeModal()">🎨</button>
+      <button class="hdr-btn" id="search-toggle" title="Search messages" onclick="toggleSearch()" style="display:none">🔍</button>
+      <button class="hdr-btn" id="theme-toggle" title="Change theme" onclick="openThemeModal()" style="display:none">🎨</button>
       <button class="hdr-btn" title="Voice call" onclick="initiateCall('audio')">📞</button>
       <button class="hdr-btn" title="Video call" onclick="initiateCall('video')">🎥</button>
       <button class="hdr-btn hdr-close" onclick="closeChatOverlay()">✕</button>
@@ -1184,6 +1184,10 @@
           <button class="tray-item tray-file" onclick="document.getElementById('file-input').click(); closeAttachMenu()">
             <span class="tray-icon">📎</span> File
           </button>
+          <label class="tray-item tray-file" style="cursor:pointer; display:flex; gap:10px; align-items:center;">
+            <input type="checkbox" id="view-once-checkbox" style="width:16px; height:16px;">
+            <span style="font-size:13px; font-weight:600;">View Once</span>
+          </label>
           <!-- Voice option (triggers mic-btn logic) -->
           <button class="tray-item tray-voice" id="tray-voice-btn" onclick="handleTrayVoice()">
             <span class="tray-icon">🎙️</span> Voice message
@@ -2012,18 +2016,47 @@ function renderMsg(m) {
 
   // Content
   if (m.file_url) {
-    if (m.file_type?.startsWith('image/')) {
-      const img = document.createElement('img'); img.className='msg-file-img'; img.src=m.file_url; img.alt=m.file_name||'image'; img.loading='lazy';
-      img.onclick = e => { e.stopPropagation(); document.getElementById('lightbox-img').src=m.file_url; document.getElementById('lightbox').classList.add('open'); };
-      bub.appendChild(img);
+    const isViewOnce = m.file_name && m.file_name.startsWith('[ONCE] ');
+    const displayFileName = isViewOnce ? m.file_name.replace('[ONCE] ', '') : m.file_name;
+    const isViewed = isViewOnce && localStorage.getItem('viewed_' + m.ts);
+
+    const renderViewedCard = () => {
+      const c = document.createElement('div'); c.className = 'msg-file-card'; c.style.opacity = '0.6';
+      const i = document.createElement('span'); i.className = 'file-icon'; i.textContent = '👁️';
+      const nf = document.createElement('div'); nf.className = 'file-info';
+      const n = document.createElement('div'); n.className = 'file-name'; n.textContent = 'Opened';
+      nf.appendChild(n); c.append(i, nf); return c;
+    };
+
+    if (isViewed) {
+      bub.appendChild(renderViewedCard());
     } else {
-      const card=document.createElement('div'); card.className='msg-file-card';
-      const icon=document.createElement('span'); icon.className='file-icon'; icon.textContent=getFileIcon(m.file_type);
-      const info=document.createElement('div'); info.className='file-info';
-      const name=document.createElement('div'); name.className='file-name'; name.textContent=m.file_name||'File';
-      const meta=document.createElement('div'); meta.className='file-meta'; meta.textContent=formatSize(m.file_size);
-      const dl=document.createElement('a'); dl.className='file-dl'; dl.href=m.file_url; dl.download=m.file_name||'file'; dl.target='_blank'; dl.textContent='⬇ Download';
-      info.append(name,meta,dl); card.append(icon,info); bub.appendChild(card);
+      if (m.file_type?.startsWith('image/')) {
+        const img = document.createElement('img'); img.className='msg-file-img'; img.src=m.file_url; img.alt=displayFileName||'image'; img.loading='lazy';
+        if (isViewOnce) { img.style.filter = 'blur(10px)'; img.title = 'Tap to View Once'; }
+        img.onclick = e => { 
+          e.stopPropagation(); document.getElementById('lightbox-img').src=m.file_url; document.getElementById('lightbox').classList.add('open'); 
+          if (isViewOnce) {
+            localStorage.setItem('viewed_' + m.ts, '1');
+            img.parentNode.replaceChild(renderViewedCard(), img);
+          }
+        };
+        bub.appendChild(img);
+      } else {
+        const card=document.createElement('div'); card.className='msg-file-card';
+        const icon=document.createElement('span'); icon.className='file-icon'; icon.textContent=getFileIcon(m.file_type);
+        const info=document.createElement('div'); info.className='file-info';
+        const name=document.createElement('div'); name.className='file-name'; name.textContent=displayFileName||'File';
+        const meta=document.createElement('div'); meta.className='file-meta'; meta.textContent=formatSize(m.file_size);
+        const dl=document.createElement('a'); dl.className='file-dl'; dl.href=m.file_url; dl.download=displayFileName||'file'; dl.target='_blank'; dl.textContent=isViewOnce?'Tap to Download (Once)':'⬇ Download';
+        if (isViewOnce) {
+          dl.onclick = () => {
+            localStorage.setItem('viewed_' + m.ts, '1');
+            card.parentNode.replaceChild(renderViewedCard(), card);
+          };
+        }
+        info.append(name,meta,dl); card.append(icon,info); bub.appendChild(card);
+      }
     }
   } else if (m.file_type && m.file_type.startsWith('audio/') && m.voice_duration) {
     // Voice message — render inline player with waveform
@@ -2664,10 +2697,12 @@ async function handleFileSelect(event) {
   if (file.size>50*1024*1024) { showToast('File too large (max 50 MB)'); return; }
   showToast('⏳ Uploading…', 30000);
   const path = `${Date.now()}_${file.name.replace(/[^a-z0-9._-]/gi,'_')}`;
+  const isViewOnce = document.getElementById('view-once-checkbox')?.checked;
+  const fileName = isViewOnce ? `[ONCE] ${file.name}` : file.name;
   const { error: upErr } = await db.storage.from('chat-files').upload(path, file, { contentType:file.type, upsert:false });
   if (upErr) { showToast('Upload failed ✗'); return; }
   const { data: urlData } = db.storage.from('chat-files').getPublicUrl(path);
-  const { error: msgErr } = await db.from('messages').insert({ from:me, text:file.name, ts:Date.now(), file_url:urlData.publicUrl, file_name:file.name, file_type:file.type, file_size:file.size });
+  const { error: msgErr } = await db.from('messages').insert({ from:me, text:fileName, ts:Date.now(), file_url:urlData.publicUrl, file_name:fileName, file_type:file.type, file_size:file.size });
   showToast(msgErr ? 'Send failed ✗' : 'File sent ✓');
 }
 
