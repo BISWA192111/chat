@@ -56,8 +56,239 @@
       --red:          #ef4444;
     }
 
-    html, body { height:100%; width:100%; font-family:'Inter',sans-serif; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden; user-select:none; }
+    }
 
+    /* ─── CUSTOM THEMES ─── */
+    [data-theme="sunset"] {
+      --chat-bg:      #1c0c0c;
+      --chat-surface: #261616;
+      --chat-panel:   #331f1f;
+      --chat-border:  #4a2c2c;
+      --chat-accent:  #f97316;
+      --chat-accent2: #c2410c;
+      --chat-me:      #b93b0b;
+      --chat-them:    #2b1818;
+    }
+    [data-theme="ocean"] {
+      --chat-bg:      #081b22;
+      --chat-surface: #122830;
+      --chat-panel:   #1a3642;
+      --chat-border:  #284e5e;
+      --chat-accent:  #06b6d4;
+      --chat-accent2: #0369a1;
+      --chat-me:      #0369a1;
+      --chat-them:    #162a33;
+    }
+    [data-theme="forest"] {
+      --chat-bg:      #0a1f11;
+      --chat-surface: #13301a;
+      --chat-panel:   #1c4225;
+      --chat-border:  #2b5c37;
+      --chat-accent:  #22c55e;
+      --chat-accent2: #15803d;
+      --chat-me:      #15803d;
+      --chat-them:    #17331f;
+    }
+    [data-theme="aurora"] {
+      --chat-bg:      linear-gradient(-45deg, #100f2e, #0f2c42, #102e1c, #2e1022);
+      --chat-surface: rgba(22, 22, 31, 0.4);
+      --chat-panel:   rgba(30, 30, 45, 0.5);
+      --chat-border:  rgba(255, 255, 255, 0.12);
+      --chat-accent:  #a78bfa;
+      --chat-accent2: #38bdf8;
+      --chat-me:      rgba(167, 139, 250, 0.4);
+      --chat-them:    rgba(0, 0, 0, 0.35);
+    }
+    [data-theme="kitty"] {
+      --chat-bg:      #1a1016;
+      --chat-surface: #2b1723;
+      --chat-panel:   #3d2033;
+      --chat-border:  #5e314d;
+      --chat-accent:  #ec4899;
+      --chat-accent2: #f472b6;
+      --chat-me:      #9d174d;
+      --chat-them:    #3d2033;
+    }
+
+    /* ─── REACTIVE CAT BACKGROUND ─── */
+    #bg-cat {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+      opacity: 0; pointer-events: none; z-index: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      width: 200px; height: 240px;
+    }
+    
+    .cat-head {
+      position: absolute; top: 10px; width: 150px; height: 120px; z-index: 3;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Ears */
+    .cat-ear {
+      position: absolute; top: -5px; width: 45px; height: 50px;
+      background: #fdfdfd; border: 3px solid #332;
+      border-radius: 8px 8px 0 0; z-index: 1;
+      transition: transform 0.3s, background 0.3s;
+      overflow: hidden;
+    }
+    .cat-ear::before {
+      content:''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 26px; height: 35px; background: #fca5a5;
+      border-radius: 6px 6px 0 0;
+    }
+    /* Orange color on the outer edge of the ear */
+    .cat-ear::after {
+      content:''; position: absolute; top: 0; bottom: 0; width: 25px; background: #f9a826;
+      transition: background 0.3s;
+    }
+    .cat-ear.left { left: 10px; transform: rotate(-25deg); }
+    .cat-ear.left::after { left: 0; border-right: 3px solid #332; }
+    .cat-ear.right { right: 10px; transform: rotate(25deg); }
+    .cat-ear.right::after { right: 0; border-left: 3px solid #332; }
+    
+    /* Face Base */
+    .cat-face-base {
+      position: absolute; inset: 0; top: 15px;
+      background: #fdfdfd; border: 3px solid #332;
+      border-radius: 48% 48% 45% 45% / 55% 55% 45% 45%;
+      overflow: hidden; z-index: 2;
+    }
+    
+    /* Orange Patches */
+    .cat-patch-left {
+      position: absolute; top: -10px; left: -10px; width: 75px; height: 80px;
+      background: #f9a826; border-radius: 0 0 45px 0; transition: background 0.3s;
+    }
+    .cat-patch-right {
+      position: absolute; top: -10px; right: -10px; width: 75px; height: 80px;
+      background: #f9a826; border-radius: 0 0 0 45px; transition: background 0.3s;
+    }
+    
+    /* Eyes */
+    .cat-eye {
+      position: absolute; top: 40px; width: 36px; height: 36px;
+      background: #221111; border-radius: 50%;
+      transition: all 0.2s; z-index: 3;
+    }
+    .cat-eye.left { left: 22px; }
+    .cat-eye.right { right: 22px; }
+    .cat-eye::before {
+      content: ''; position: absolute; top: 5px; right: 8px;
+      width: 13px; height: 13px; background: #fff; border-radius: 50%; transition: all 0.2s;
+    }
+    .cat-eye::after {
+      content: ''; position: absolute; bottom: 7px; left: 10px;
+      width: 7px; height: 7px; background: #fff; border-radius: 50%; transition: all 0.2s;
+    }
+    
+    .lash {
+      position: absolute; width: 10px; height: 3px; background: #221111;
+      border-radius: 2px; transition: all 0.2s;
+    }
+    .cat-eye.left .lash.l1 { top: -1px; left: 2px; transform: rotate(-50deg); }
+    .cat-eye.left .lash.l2 { top: 7px; left: -5px; transform: rotate(-20deg); }
+    .cat-eye.right .lash.l1 { top: -1px; right: 2px; transform: rotate(50deg); }
+    .cat-eye.right .lash.l2 { top: 7px; right: -5px; transform: rotate(20deg); }
+    
+    /* Nose */
+    .cat-nose {
+      position: absolute; top: 72px; left: 50%; transform: translateX(-50%);
+      width: 12px; height: 7px; background: #fca5a5;
+      border-radius: 50% 50% 50% 50%; border: 2px solid #332;
+      z-index: 5;
+    }
+    
+    /* Mouth */
+    .cat-mouth {
+      position: absolute; top: 78px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 12px; z-index: 4; transition: all 0.2s;
+    }
+    .cat-lip {
+      position: absolute; top: 0; width: 13px; height: 10px;
+      border: 2.5px solid #332; border-top: none;
+    }
+    .cat-lip.left { left: 0; border-right: none; border-radius: 0 0 0 12px; }
+    .cat-lip.right { right: 0; border-left: none; border-radius: 0 0 12px 0; }
+    .cat-tongue {
+      position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 8px; background: #fca5a5;
+      border: 2px solid #332; border-top: none; border-radius: 0 0 10px 10px;
+    }
+    
+    /* Body */
+    .cat-body {
+      position: absolute; bottom: 20px; width: 110px; height: 100px;
+      background: #fdfdfd; border: 3px solid #332;
+      border-radius: 50px 50px 40px 40px; z-index: 2;
+    }
+    .cat-paw.front {
+      position: absolute; bottom: -5px; width: 20px; height: 50px;
+      background: #fdfdfd; border: 3px solid #332;
+      border-radius: 10px;
+    }
+    .cat-paw.front.left { left: 30px; }
+    .cat-paw.front.right { right: 30px; }
+    
+    .cat-paw.hind {
+      position: absolute; bottom: -5px; width: 32px; height: 55px;
+      background: #fdfdfd; border: 3px solid #332;
+      border-radius: 16px 16px 16px 16px; z-index: -1;
+    }
+    .cat-paw.hind.left { left: -16px; }
+    .cat-paw.hind.right { right: -16px; }
+    
+    /* Tail */
+    .cat-tail-wrap {
+      position: absolute; bottom: 25px; right: -25px; width: 60px; height: 80px;
+      z-index: 1; transform-origin: bottom left; transition: transform 0.3s;
+    }
+    .cat-tail {
+      position: absolute; bottom: 0; left: 0; width: 30px; height: 60px;
+      border-right: 14px solid #f9a826;
+      border-bottom: 14px solid #f9a826;
+      border-radius: 0 0 30px 0;
+      filter: drop-shadow(0 0 1px #332) drop-shadow(0 0 1px #332) drop-shadow(0 0 1px #332);
+    }
+    .cat-tail-tip {
+      position: absolute; top: -15px; right: -8px; width: 36px; height: 36px;
+      background: #fdfdfd; border: 3px solid #332; border-radius: 50%;
+    }
+
+    /* Cat States */
+    #bg-cat.happy, #bg-cat.sad, #bg-cat.angry, #bg-cat.shocked {
+      opacity: 0.35; transform: translate(-50%, -50%) scale(1);
+    }
+    
+    #bg-cat.happy .cat-head { transform: translateY(-5px); }
+    #bg-cat.happy .cat-eye { height: 10px; border-radius: 10px; top: 54px; background: #332; }
+    #bg-cat.happy .cat-eye::before, #bg-cat.happy .cat-eye::after { display: none; }
+    #bg-cat.happy .lash { display: none; }
+    #bg-cat.happy .cat-tongue { height: 12px; background: #ec4899; }
+    #bg-cat.happy .cat-tail-wrap { transform: rotate(15deg); }
+    
+    #bg-cat.sad .cat-head { transform: translateY(5px); }
+    #bg-cat.sad .cat-ear.left { transform: rotate(-45deg) translateY(5px); }
+    #bg-cat.sad .cat-ear.right { transform: rotate(45deg) translateY(5px); }
+    #bg-cat.sad .cat-eye { top: 48px; }
+    #bg-cat.sad .cat-eye::before { top: 18px; right: 12px; width: 10px; height: 10px; }
+    #bg-cat.sad .cat-mouth { transform: translateX(-50%) rotate(180deg); top: 82px; }
+    #bg-cat.sad .cat-tongue { display: none; }
+    #bg-cat.sad .cat-tail-wrap { transform: rotate(-20deg); }
+    
+    #bg-cat.angry .cat-patch-left, #bg-cat.angry .cat-patch-right, #bg-cat.angry .cat-ear::after { background: #ef4444; }
+    #bg-cat.angry .cat-eye { border-radius: 0 0 18px 18px; height: 18px; top: 52px; }
+    #bg-cat.angry .cat-eye::before, #bg-cat.angry .cat-eye::after { display: none; }
+    #bg-cat.angry .lash { transform: rotate(0) !important; top: -4px !important; width: 16px; height: 4px; }
+    #bg-cat.angry .cat-mouth { border-radius: 20px 20px 0 0; border: 3px solid #332; border-bottom: none; height: 8px; top: 82px; }
+    #bg-cat.angry .cat-lip, #bg-cat.angry .cat-tongue { display: none; }
+    #bg-cat.angry .cat-tail-wrap { transform: rotate(30deg); filter: blur(1px); }
+    
+    #bg-cat.shocked .cat-head { transform: translateY(-10px); }
+    #bg-cat.shocked .cat-eye { width: 30px; height: 30px; }
+    #bg-cat.shocked .cat-mouth { height: 16px; width: 16px; border-radius: 50%; border: 3px solid #332; background: #332; top: 78px; }
+    #bg-cat.shocked .cat-lip, #bg-cat.shocked .cat-tongue { display: none; }
+
+    html, body { height:100%; width:100%; font-family:'Inter',sans-serif; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden; user-select:none; }
     /* ─── CALCULATOR ─── */
     #calculator { width:360px; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow),0 0 0 1px var(--border); padding:24px 20px 20px; display:flex; flex-direction:column; gap:16px; }
     #calc-display { background:var(--display-bg); border-radius:12px; padding:20px 20px 14px; text-align:right; border:1px solid var(--border); min-height:100px; display:flex; flex-direction:column; justify-content:flex-end; gap:6px; }
@@ -79,8 +310,21 @@
     .btn-eq:hover  { filter:brightness(1.12); }
 
     /* ─── CHAT OVERLAY ─── */
-    #chat-overlay { position:fixed; inset:0; background:var(--chat-bg); display:none; flex-direction:column; z-index:100; animation:fadeIn 0.35s ease; }
+    #chat-overlay { 
+      position:fixed; inset:0; background:var(--chat-bg); 
+      display:none; flex-direction:column; z-index:100; 
+      animation:fadeIn 0.35s ease;
+    }
     #chat-overlay.visible { display:flex; }
+    #chat-overlay[data-theme="aurora"] {
+      background-size: 400% 400%;
+      animation: fadeIn 0.35s ease, auroraBg 12s ease infinite;
+    }
+    @keyframes auroraBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     @keyframes fadeIn { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
 
     /* ─── LOGIN SCREEN ─── */
@@ -100,7 +344,87 @@
     .back-btn { background:var(--chat-surface); color:var(--subtext); border:1px solid var(--chat-border); border-radius:10px; padding:12px 28px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.15s; }
     .back-btn:hover { background:var(--chat-panel); }
 
-    /* ─── CHAT SCREEN ─── */
+    /* ─── BIRTHDAY SURPRISE (Ami / Kinny — Oct 10) ─── */
+    #bday-confetti { position:fixed; inset:0; pointer-events:none; z-index:50; }
+    #bday-banner {
+      display:none; text-align:center; margin-top:-10px;
+      animation:bdayDrop 0.7s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes bdayDrop { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    #bday-banner .bday-title {
+      font-size:20px; font-weight:800; letter-spacing:-0.5px;
+      background:linear-gradient(90deg,#f97316,#ec4899,#a78bfa,#06b6d4);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      animation:rainbowShift 3s linear infinite;
+    }
+    @keyframes rainbowShift { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
+    #bday-banner .bday-sub { font-size:13px; color:var(--subtext); margin-top:4px; line-height:1.5; }
+
+    /* Birthday card glow */
+    #card-kinny.birthday {
+      border-color:#f97316 !important;
+      box-shadow:0 0 0 3px rgba(249,115,22,0.3), 0 8px 32px rgba(249,115,22,0.25) !important;
+      animation:birthdayPulse 2s ease-in-out infinite;
+    }
+    @keyframes birthdayPulse {
+      0%,100% { box-shadow:0 0 0 3px rgba(249,115,22,0.3), 0 8px 32px rgba(249,115,22,0.2); }
+      50%      { box-shadow:0 0 0 6px rgba(236,72,153,0.3), 0 12px 40px rgba(236,72,153,0.3); }
+    }
+    .bday-badge {
+      position:absolute; top:-10px; right:-10px; background:linear-gradient(135deg,#f97316,#ec4899);
+      border-radius:99px; padding:4px 10px; font-size:11px; font-weight:700; color:#fff;
+      box-shadow:0 4px 12px rgba(249,115,22,0.5); white-space:nowrap; display:none;
+      animation:bdayDrop 0.5s cubic-bezier(.34,1.56,.64,1) 0.3s both;
+    }
+    #card-kinny { position:relative; overflow:visible; }
+    #login-av-kinny.birthday { animation:cakeSpin 0.6s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes cakeSpin { from{transform:scale(0.5) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
+
+    /* ─── BIRTHDAY COUNTDOWN CARD ─── */
+    #bday-reveal {
+      width:100%; max-width:340px;
+      background:linear-gradient(135deg,rgba(124,106,247,0.12),rgba(236,72,153,0.10));
+      border:1px dashed rgba(236,72,153,0.4);
+      border-radius:20px; padding:16px;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      cursor:pointer; color:var(--text); font-weight:600; font-size:14px;
+      transition:background 0.2s, transform 0.1s;
+    }
+    #bday-reveal:hover { background:rgba(236,72,153,0.15); transform:scale(1.02); }
+    #bday-reveal:active { transform:scale(0.98); }
+
+    #bday-countdown-card {
+      width:100%; max-width:340px;
+      background:linear-gradient(135deg,rgba(124,106,247,0.12),rgba(236,72,153,0.10));
+      border:1px solid rgba(236,72,153,0.28);
+      border-radius:20px; padding:16px 18px;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      animation:bdayCardIn 0.6s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes bdayCardIn { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+    .bday-cd-top { display:flex; align-items:center; gap:8px; }
+    .bday-cd-emoji { font-size:20px; animation:heartBeat 1.4s ease-in-out infinite; }
+    @keyframes heartBeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.3)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 70%{transform:scale(1)} }
+    .bday-cd-label { font-size:13px; font-weight:700; color:var(--subtext); letter-spacing:0.3px; }
+    .bday-cd-name {
+      font-size:15px; font-weight:800;
+      background:linear-gradient(90deg,#a78bfa,#ec4899,#f97316);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .bday-cd-units { display:flex; gap:10px; align-items:flex-end; }
+    .bday-cd-unit { display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .bday-cd-num {
+      font-size:26px; font-weight:800; font-variant-numeric:tabular-nums;
+      color:var(--text); line-height:1;
+      background:var(--chat-panel); border:1px solid var(--chat-border);
+      border-radius:10px; padding:6px 10px; min-width:46px; text-align:center;
+      transition:transform 0.15s;
+    }
+    .bday-cd-unit-label { font-size:9px; font-weight:700; color:var(--subtext); text-transform:uppercase; letter-spacing:0.8px; }
+    .bday-cd-sep { font-size:22px; font-weight:800; color:var(--chat-accent); margin-bottom:8px; opacity:0.6; animation:sepBlink 1s step-start infinite; }
+    @keyframes sepBlink { 0%,100%{opacity:0.6} 50%{opacity:0.15} }
+    .bday-cd-footer { font-size:11px; color:var(--subtext); text-align:center; line-height:1.5; }
+    .bday-cd-footer span { color:var(--chat-accent2); font-weight:600; }
     #chat-screen { display:none; flex-direction:column; height:100%; }
     #chat-screen.visible { display:flex; }
 
@@ -157,6 +481,32 @@
     .msg-bubble.optimistic { opacity:0.65; }
     /* Long-press ripple */
     .msg-bubble.pressing { transform:scale(0.97); transition:transform 0.15s; }
+    
+    /* ─── BIG EMOJI MESSAGES ─── */
+    .msg-bubble.big-emoji {
+      font-size: 52px;
+      background: transparent !important;
+      border: none !important;
+      padding: 0;
+      box-shadow: none !important;
+      animation: emojiPop 0.5s cubic-bezier(.34,1.56,.64,1);
+      line-height: 1.1;
+    }
+    @keyframes emojiPop { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+    
+    /* ─── FLOATING REACTION EMOJIS ─── */
+    .floating-emoji {
+      position: fixed;
+      font-size: 28px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: floatUp 1.2s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    @keyframes floatUp {
+      0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      20%  { transform: translate(-50%, -150%) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -400%) scale(1); opacity: 0; }
+    }
 
     .msg-footer { display:flex; align-items:center; gap:4px; margin-top:1px; }
     .msg-time   { font-size:10px; color:var(--subtext); }
@@ -498,6 +848,132 @@
     /* ─── TOAST ─── */
     #toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface2); color:var(--text); font-size:13px; font-weight:500; padding:9px 20px; border-radius:99px; border:1px solid var(--border); opacity:0; transition:opacity 0.25s,transform 0.25s; pointer-events:none; z-index:700; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ═══════════════════════════════════════
+       THEMES — applied via data-theme on #chat-overlay
+    ═══════════════════════════════════════ */
+    /* Default: Midnight (purple) — already in :root */
+    #chat-overlay[data-theme="sunset"] {
+      --chat-bg:#0f0a06; --chat-surface:#1a1108; --chat-panel:#221608;
+      --chat-border:#3a2a18; --chat-accent:#f97316; --chat-accent2:#fb923c;
+      --chat-me:#c2410c; --chat-them:#2a1a08;
+    }
+    #chat-overlay[data-theme="ocean"] {
+      --chat-bg:#030d14; --chat-surface:#071825; --chat-panel:#0a1e2e;
+      --chat-border:#0e3050; --chat-accent:#06b6d4; --chat-accent2:#22d3ee;
+      --chat-me:#0369a1; --chat-them:#071e2e;
+    }
+    #chat-overlay[data-theme="forest"] {
+      --chat-bg:#030d06; --chat-surface:#071a0a; --chat-panel:#0a2010;
+      --chat-border:#163a1e; --chat-accent:#22c55e; --chat-accent2:#4ade80;
+      --chat-me:#15803d; --chat-them:#0a2010;
+    }
+
+    /* ─── TYPING INDICATOR ─── */
+    #typing-bar {
+      display:none; align-items:center; gap:10px;
+      padding:6px 16px 0; background:transparent;
+    }
+    #typing-bar.visible { display:flex; }
+    .typing-dots {
+      display:flex; gap:4px; align-items:center;
+      background:var(--chat-them); border:1px solid var(--chat-border);
+      border-radius:18px; padding:8px 14px;
+    }
+    .typing-dot {
+      width:7px; height:7px; border-radius:50%; background:var(--subtext);
+      animation:typingBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay:0.18s; }
+    .typing-dot:nth-child(3) { animation-delay:0.36s; }
+    @keyframes typingBounce {
+      0%,60%,100% { transform:translateY(0); opacity:0.5; }
+      30% { transform:translateY(-6px); opacity:1; }
+    }
+    .typing-label { font-size:12px; color:var(--subtext); font-style:italic; }
+
+    /* ─── PINNED MESSAGE BANNER ─── */
+    #pinned-banner {
+      display:none; align-items:center; gap:10px;
+      background:var(--chat-panel); border-bottom:1px solid var(--chat-border);
+      padding:8px 16px; cursor:pointer; transition:background 0.15s;
+    }
+    #pinned-banner:hover { background:var(--chat-surface); }
+    #pinned-banner.visible { display:flex; }
+    .pin-icon { font-size:14px; flex-shrink:0; color:var(--chat-accent2); }
+    .pin-text { flex:1; font-size:12px; color:var(--subtext); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pin-text strong { color:var(--text); font-weight:600; }
+    #pin-close { background:none; border:none; color:var(--subtext); font-size:16px; cursor:pointer; padding:2px 4px; border-radius:6px; flex-shrink:0; }
+    #pin-close:hover { color:var(--red); }
+
+    /* ─── SEARCH BAR ─── */
+    #search-bar {
+      display:none; align-items:center; gap:10px;
+      background:var(--chat-surface); border-bottom:1px solid var(--chat-border);
+      padding:10px 14px;
+    }
+    #search-bar.visible { display:flex; }
+    #search-input {
+      flex:1; background:var(--chat-panel); border:1.5px solid var(--chat-border);
+      border-radius:10px; padding:9px 14px; color:var(--text);
+      font-family:'Inter',sans-serif; font-size:14px; outline:none;
+      transition:border-color 0.2s;
+    }
+    #search-input:focus { border-color:var(--chat-accent); }
+    #search-input::placeholder { color:var(--subtext); }
+    .search-count { font-size:12px; color:var(--subtext); white-space:nowrap; min-width:40px; text-align:right; }
+    #search-close { background:none; border:none; color:var(--subtext); font-size:18px; cursor:pointer; padding:4px; border-radius:6px; }
+    #search-close:hover { color:var(--text); }
+    /* Highlight matches */
+    .msg-bubble .search-hl { background:rgba(250,204,21,0.35); border-radius:3px; color:inherit; }
+    .msg-wrap.search-dim { opacity:0.25; }
+
+    /* ─── SWIPE TO REPLY ─── */
+    .msg-bubble { touch-action:pan-y; }
+    .swipe-reply-hint {
+      position:absolute; top:50%; transform:translateY(-50%);
+      font-size:18px; opacity:0; transition:opacity 0.15s;
+      pointer-events:none;
+    }
+    .msg-wrap.me   .swipe-reply-hint { right:calc(100% + 6px); }
+    .msg-wrap.them .swipe-reply-hint { left:calc(100% + 6px); }
+    .swipe-reply-hint.show { opacity:1; }
+
+    /* ─── THEME PICKER MODAL ─── */
+    #theme-modal {
+      position:fixed; inset:0; background:rgba(0,0,0,0.65);
+      display:none; align-items:flex-end; justify-content:center;
+      z-index:350; backdrop-filter:blur(6px);
+    }
+    #theme-modal.open { display:flex; }
+    .theme-box {
+      background:var(--chat-surface); border-radius:24px 24px 0 0;
+      padding:20px 20px calc(env(safe-area-inset-bottom)+20px);
+      width:100%; max-width:480px;
+      animation:slideUp 0.28s cubic-bezier(.34,1.4,.64,1);
+    }
+    .theme-box-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:16px; text-align:center; }
+    .theme-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .theme-swatch {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      cursor:pointer; padding:10px 6px; border-radius:14px;
+      transition:background 0.15s, transform 0.15s;
+      border:2px solid transparent;
+    }
+    .theme-swatch:hover { background:var(--chat-panel); transform:translateY(-2px); }
+    .theme-swatch.active { border-color:var(--chat-accent); background:var(--chat-panel); }
+    .theme-circle { width:48px; height:48px; border-radius:50%; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
+    .theme-name { font-size:11px; color:var(--subtext); font-weight:600; text-align:center; }
+
+    /* ─── REACTION BOUNCE ANIMATION ─── */
+    @keyframes rxnPop {
+      0%  { transform:scale(1); }
+      40% { transform:scale(1.45); }
+      70% { transform:scale(0.88); }
+      100%{ transform:scale(1); }
+    }
+    .reaction-pill.popping { animation:rxnPop 0.4s cubic-bezier(.34,1.56,.64,1); }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -542,11 +1018,56 @@
       <div class="login-title">Ghost Chat</div>
       <div class="login-sub" style="margin-top:6px">Who are you?</div>
     </div>
+    <div id="bday-confetti"></div>
+
+    <!-- Birthday banner (shown only on Oct 10) -->
+    <div id="bday-banner">
+      <div class="bday-title">🎈 Happy Birthday, Ami! 🎈</div>
+      <div class="bday-sub">Wishing you all the love in the universe ✨<br>Have the most magical day!</div>
+    </div>
+
+    <!-- Birthday countdown reveal button -->
+    <div id="bday-reveal" onclick="this.style.display='none'; document.getElementById('bday-countdown-card').style.display='flex';">
+      🎁 Tap to reveal a secret...
+    </div>
+
+    <!-- Birthday countdown card (initially hidden) -->
+    <div id="bday-countdown-card" style="display:none;">
+      <div class="bday-cd-top">
+        <span class="bday-cd-emoji">❤️</span>
+        <span class="bday-cd-label">Ami's Birthday</span>
+        <span class="bday-cd-name">🎂 Oct 10</span>
+      </div>
+      <div class="bday-cd-units">
+        <div class="bday-cd-unit">
+          <div class="bday-cd-num" id="cd-days">--</div>
+          <div class="bday-cd-unit-label">Days</div>
+        </div>
+        <div class="bday-cd-sep">:</div>
+        <div class="bday-cd-unit">
+          <div class="bday-cd-num" id="cd-hours">--</div>
+          <div class="bday-cd-unit-label">Hrs</div>
+        </div>
+        <div class="bday-cd-sep">:</div>
+        <div class="bday-cd-unit">
+          <div class="bday-cd-num" id="cd-mins">--</div>
+          <div class="bday-cd-unit-label">Min</div>
+        </div>
+        <div class="bday-cd-sep">:</div>
+        <div class="bday-cd-unit">
+          <div class="bday-cd-num" id="cd-secs">--</div>
+          <div class="bday-cd-unit-label">Sec</div>
+        </div>
+      </div>
+      <div class="bday-cd-footer" id="cd-footer">Counting down to <span>her special day</span> ✨</div>
+    </div>
+
     <div class="user-cards">
       <div class="user-card" onclick="loginAs('kinny')" id="card-kinny">
+        <div class="bday-badge" id="bday-badge">🎂 It's your day!</div>
         <div class="uc-avatar" id="login-av-kinny" style="background:linear-gradient(135deg,#7c6af7,#a78bfa)">🌙</div>
         <div class="uc-name">Kinny</div>
-        <div class="uc-label">Tap to enter</div>
+        <div class="uc-label" id="kinny-label">Tap to enter</div>
       </div>
       <div class="user-card" onclick="loginAs('cosmic')" id="card-cosmic">
         <div class="uc-avatar" id="login-av-cosmic" style="background:linear-gradient(135deg,#ff6b35,#ff9a6c)">✨</div>
@@ -559,19 +1080,81 @@
 
   <!-- CHAT -->
   <div id="chat-screen">
+    <div id="bg-cat">
+      <div class="cat-tail-wrap">
+        <div class="cat-tail"></div>
+        <div class="cat-tail-tip"></div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-paw hind left"></div>
+        <div class="cat-paw hind right"></div>
+        <div class="cat-paw front left"></div>
+        <div class="cat-paw front right"></div>
+      </div>
+      <div class="cat-head">
+        <div class="cat-ear left"></div>
+        <div class="cat-ear right"></div>
+        <div class="cat-face-base">
+          <div class="cat-patch-left"></div>
+          <div class="cat-patch-right"></div>
+          
+          <div class="cat-eye left">
+            <div class="lash l1"></div><div class="lash l2"></div>
+          </div>
+          <div class="cat-eye right">
+            <div class="lash r1"></div><div class="lash r2"></div>
+          </div>
+          
+          <div class="cat-nose"></div>
+          
+          <div class="cat-mouth">
+            <div class="cat-lip left"></div>
+            <div class="cat-lip right"></div>
+            <div class="cat-tongue"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="chat-header">
       <div class="chat-avatar" id="peer-avatar" onclick="openAvatarModal()" title="Change your profile picture">👤</div>
       <div class="chat-header-info">
         <div class="chat-header-name" id="peer-name">—</div>
         <div class="chat-header-sub" id="peer-status">online</div>
       </div>
+      <button class="hdr-btn" id="search-toggle" title="Search messages" onclick="toggleSearch()">🔍</button>
+      <button class="hdr-btn" id="theme-toggle" title="Change theme" onclick="openThemeModal()">🎨</button>
       <button class="hdr-btn" title="Voice call" onclick="initiateCall('audio')">📞</button>
       <button class="hdr-btn" title="Video call" onclick="initiateCall('video')">🎥</button>
       <button class="hdr-btn hdr-close" onclick="closeChatOverlay()">✕</button>
     </div>
 
+    <!-- Pinned message banner -->
+    <div id="pinned-banner">
+      <span class="pin-icon">📌</span>
+      <div class="pin-text"><strong>Pinned:</strong> <span id="pin-text-content"></span></div>
+      <button id="pin-close" onclick="unpinMessage(event)" title="Unpin">✕</button>
+    </div>
+
+    <!-- Search bar -->
+    <div id="search-bar">
+      <input id="search-input" type="text" placeholder="Search messages…" oninput="searchMessages(this.value)" autocomplete="off">
+      <div class="search-count" id="search-count"></div>
+      <button id="search-close" onclick="closeSearch()">✕</button>
+    </div>
+
     <div id="messages-area">
       <div class="sys-msg">🔒 Private chat. Messages sync in real time.</div>
+    </div>
+
+    <!-- Typing indicator -->
+    <div id="typing-bar">
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+      <div class="typing-label" id="typing-label">typing…</div>
     </div>
 
     <div id="reply-bar">
@@ -622,6 +1205,7 @@
     <div class="as-emoji-grid" id="as-emoji-grid"></div>
     <div class="as-divider"></div>
     <button class="as-action-btn" id="as-reply-btn">  <span class="as-icon">↩</span> Reply</button>
+    <button class="as-action-btn" id="as-pin-btn">   <span class="as-icon">📌</span> Pin</button>
     <button class="as-action-btn" id="as-copy-btn">   <span class="as-icon">📋</span> Copy</button>
     <button class="as-action-btn danger" id="as-delete-btn" style="display:none"><span class="as-icon">🗑</span> Delete</button>
   </div>
@@ -698,6 +1282,39 @@
 <audio id="call-ringtone" loop>
   <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA..." type="audio/wav">
 </audio>
+
+<!-- Theme picker modal -->
+<div id="theme-modal" onclick="closeThemeModal()">
+  <div class="theme-box" onclick="event.stopPropagation()">
+    <div class="theme-box-title">🎨 Chat Theme</div>
+    <div class="theme-grid">
+      <div class="theme-swatch active" data-theme="midnight" onclick="applyTheme('midnight',this)">
+        <div class="theme-circle" style="background:linear-gradient(135deg,#7c6af7,#4f3cdb)"></div>
+        <div class="theme-name">Midnight</div>
+      </div>
+      <div class="theme-swatch" data-theme="sunset" onclick="applyTheme('sunset',this)">
+        <div class="theme-circle" style="background:linear-gradient(135deg,#f97316,#c2410c)"></div>
+        <div class="theme-name">Sunset</div>
+      </div>
+      <div class="theme-swatch" data-theme="ocean" onclick="applyTheme('ocean',this)">
+        <div class="theme-circle" style="background:linear-gradient(135deg,#06b6d4,#0369a1)"></div>
+        <div class="theme-name">Ocean</div>
+      </div>
+      <div class="theme-swatch" data-theme="forest" onclick="applyTheme('forest',this)">
+        <div class="theme-circle" style="background:linear-gradient(135deg,#22c55e,#15803d)"></div>
+        <div class="theme-name">Forest</div>
+      </div>
+      <div class="theme-swatch" data-theme="aurora" onclick="applyTheme('aurora',this)">
+        <div class="theme-circle" style="background:linear-gradient(-45deg, #4f3cdb, #0369a1, #15803d, #c2410c); background-size: 200% 200%; animation: auroraBg 5s ease infinite;"></div>
+        <div class="theme-name">Aurora 🌌</div>
+      </div>
+      <div class="theme-swatch" data-theme="kitty" onclick="applyTheme('kitty',this)">
+        <div class="theme-circle" style="background:linear-gradient(135deg, #ec4899, #f472b6)"></div>
+        <div class="theme-name">Kitty 🐱</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Privacy lock overlay -->
 <div id="privacy-overlay">
@@ -1190,7 +1807,14 @@ function refreshReactionsUI(msgTs) {
   const row  = wrap?.querySelector('.reactions-row');
   if (!row) return;
   const isMe = wrap.classList.contains('me');
+  // Capture which emojis are currently shown before re-render
+  const prevEmojis = [...row.querySelectorAll('.reaction-pill')].map(p => p.dataset.emoji);
   renderReactionPills(row, msgTs, isMe);
+  // Pop-animate pills that are new or changed
+  const newEmojis = [...row.querySelectorAll('.reaction-pill')].map(p => p.dataset.emoji);
+  newEmojis.forEach(em => { if (!prevEmojis.includes(em)) popReactionPill(msgTs, em); });
+  // Also pop changed counts
+  row.querySelectorAll('.reaction-pill').forEach(pill => popReactionPill(msgTs, pill.dataset.emoji));
 }
 
 function renderReactionPills(row, msgTs, isMe) {
@@ -1204,9 +1828,13 @@ function renderReactionPills(row, msgTs, isMe) {
   Object.entries(grouped).forEach(([emoji, users]) => {
     const pill = document.createElement('div');
     pill.className = 'reaction-pill' + (users.includes(me) ? ' mine' : '');
+    pill.dataset.emoji = emoji;
     pill.title = users.join(', ');
     pill.innerHTML = `${emoji}<span>${users.length > 1 ? users.length : ''}</span>`;
-    pill.onclick = () => toggleReaction(msgTs, emoji);
+    pill.onclick = (e) => {
+      toggleReaction(msgTs, emoji);
+      spawnFloatingEmoji(emoji, e.clientX, e.clientY);
+    };
     row.appendChild(pill);
   });
 }
@@ -1233,7 +1861,11 @@ function showActionSheet(m) {
     const btn = document.createElement('div'); btn.className = 'as-quick-emoji';
     btn.textContent = em;
     if (currentRxn === em) btn.classList.add('selected');
-    btn.onclick = () => { toggleReaction(m.ts, em); hideActionSheet(); };
+    btn.onclick = (e) => { 
+      toggleReaction(m.ts, em); 
+      spawnFloatingEmoji(em, e.clientX, e.clientY);
+      hideActionSheet(); 
+    };
     strip.appendChild(btn);
   });
 
@@ -1248,7 +1880,11 @@ function showActionSheet(m) {
     const item = document.createElement('div'); item.className = 'as-emoji-grid-item';
     item.textContent = em;
     if (currentRxn === em) item.style.background = 'rgba(124,106,247,0.3)';
-    item.onclick = () => { toggleReaction(m.ts, em); hideActionSheet(); };
+    item.onclick = (e) => { 
+      toggleReaction(m.ts, em); 
+      spawnFloatingEmoji(em, e.clientX, e.clientY);
+      hideActionSheet(); 
+    };
     grid.appendChild(item);
   });
 
@@ -1266,6 +1902,10 @@ function hideActionSheet() {
 
 document.getElementById('as-reply-btn').onclick = () => {
   if (asCurrentMsg) startReply(asCurrentMsg);
+  hideActionSheet();
+};
+document.getElementById('as-pin-btn').onclick = () => {
+  if (asCurrentMsg) pinMessage(asCurrentMsg);
   hideActionSheet();
 };
 document.getElementById('as-copy-btn').onclick = () => {
@@ -1304,6 +1944,9 @@ function setupLongPress(bub, m) {
   bub.addEventListener('mousemove',   move);
   // Right-click also shows sheet
   bub.addEventListener('contextmenu', e => { e.preventDefault(); showActionSheet(m); });
+
+  // ── SWIPE TO REPLY (swipe right on their msg, left on mine) ──
+  setupSwipeReply(bub.closest('.msg-wrap'), m);
 }
 
 /* ════════════════════════════════════════
@@ -1448,14 +2091,25 @@ function renderMsg(m) {
       };
     };
   } else {
-    // Text message — auto-detect links
-    const text = m.text || '';
-    if (URL_REGEX.test(text)) {
+    // Text message — auto-detect links and big emojis
+    const text = (m.text || '').trim();
+    // Regex matches 1 to 3 emojis and nothing else (ignoring whitespace)
+    const isBigEmoji = /^(\s*[\p{Emoji_Presentation}\p{Extended_Pictographic}]\s*){1,3}$/u.test(text);
+    
+    if (isBigEmoji) {
+      bub.classList.add('big-emoji');
+      bub.appendChild(document.createTextNode(text.replace(/\s+/g, '')));
+      // Trigger special full-screen effects for newly received or sent emojis
+      if (m.ts > lastSeen - 1000) triggerEmojiEffect(text);
+    } else if (URL_REGEX.test(text)) {
       URL_REGEX.lastIndex = 0;
       bub.innerHTML = linkifyText(text);
     } else {
       bub.appendChild(document.createTextNode(text));
     }
+    
+    // Animate cat based on sentiment
+    if (m.ts > lastSeen - 1000) analyzeSentiment(text);
   }
 
   // Footer
@@ -1558,6 +2212,17 @@ function subscribeRealtime() {
 
   // ── WebRTC call signaling ──
   .on('broadcast', { event: 'call' }, ({ payload }) => handleCallSignal(payload))
+
+  // ── Typing indicator receive ──
+  .on('broadcast', { event: 'typing' }, ({ payload }) => {
+    if (payload?.from === them) showTypingIndicator();
+  })
+
+  // ── Pin state sync ──
+  .on('broadcast', { event: 'pin' }, ({ payload }) => {
+    if (payload?.text !== undefined) renderPinnedBanner(payload.text, payload.ts);
+    else hidePinnedBanner();
+  })
 
   .subscribe(async status => {
     if (status === 'SUBSCRIBED') {
@@ -2041,7 +2706,16 @@ function formatSize(bytes) {
 
 const msgInput = document.getElementById('msg-input');
 function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
-msgInput.addEventListener('input', () => autoResize(msgInput));
+let typingDebounce = null;
+msgInput.addEventListener('input', () => {
+  autoResize(msgInput);
+  // Broadcast typing event
+  if (rtChannel && me) {
+    rtChannel.send({ type:'broadcast', event:'typing', payload:{ from: me } });
+    clearTimeout(typingDebounce);
+    typingDebounce = setTimeout(() => {}, 3000); // just throttle
+  }
+});
 msgInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } });
 
 let toastTimer = null;
@@ -2051,6 +2725,524 @@ function showToast(msg, dur=2500) {
 }
 
 window.addEventListener('beforeunload', () => { if(rtChannel) rtChannel.unsubscribe(); });
+
+/* ════════════════════════════════════════
+   1. TYPING INDICATOR
+════════════════════════════════════════ */
+let typingHideTimer = null;
+function showTypingIndicator() {
+  const bar   = document.getElementById('typing-bar');
+  const label = document.getElementById('typing-label');
+  if (!bar) return;
+  const name = them ? them.charAt(0).toUpperCase() + them.slice(1) : 'Someone';
+  label.textContent = `${name} is typing…`;
+  bar.classList.add('visible');
+  clearTimeout(typingHideTimer);
+  // Auto-hide after 3 s of no new typing events
+  typingHideTimer = setTimeout(() => bar.classList.remove('visible'), 3000);
+}
+
+/* ════════════════════════════════════════
+   2. MESSAGE PINNING
+════════════════════════════════════════ */
+let pinnedMsg = null; // { text, ts }
+
+function pinMessage(m) {
+  pinnedMsg = { text: m.text || m.file_name || '(attachment)', ts: m.ts };
+  renderPinnedBanner(pinnedMsg.text, pinnedMsg.ts);
+  // Broadcast to peer
+  if (rtChannel) rtChannel.send({ type:'broadcast', event:'pin', payload: pinnedMsg });
+  showToast('📌 Message pinned');
+}
+
+function unpinMessage(e) {
+  if (e) e.stopPropagation();
+  pinnedMsg = null;
+  hidePinnedBanner();
+  if (rtChannel) rtChannel.send({ type:'broadcast', event:'pin', payload: {} });
+  showToast('Unpinned');
+}
+
+function renderPinnedBanner(text, ts) {
+  pinnedMsg = { text, ts };
+  const banner = document.getElementById('pinned-banner');
+  document.getElementById('pin-text-content').textContent = text;
+  banner.classList.add('visible');
+  // Click banner scrolls to the message
+  banner.onclick = (e) => {
+    if (e.target.id === 'pin-close') return;
+    const el = document.querySelector(`.msg-wrap[data-ts="${ts}"]`);
+    if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.classList.add('highlighted'); setTimeout(() => el.classList.remove('highlighted'), 900); }
+  };
+}
+
+function hidePinnedBanner() {
+  document.getElementById('pinned-banner').classList.remove('visible');
+}
+
+/* ════════════════════════════════════════
+   3. MESSAGE SEARCH
+════════════════════════════════════════ */
+function toggleSearch() {
+  const bar = document.getElementById('search-bar');
+  const inp = document.getElementById('search-input');
+  if (bar.classList.contains('visible')) {
+    closeSearch();
+  } else {
+    bar.classList.add('visible');
+    inp.focus();
+  }
+}
+
+function closeSearch() {
+  document.getElementById('search-bar').classList.remove('visible');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-count').textContent = '';
+  // Remove all highlights and dim
+  document.querySelectorAll('.msg-wrap').forEach(w => {
+    w.classList.remove('search-dim');
+    w.querySelectorAll('.search-hl').forEach(h => {
+      const parent = h.parentNode;
+      parent.replaceChild(document.createTextNode(h.textContent), h);
+      parent.normalize();
+    });
+  });
+}
+
+function searchMessages(query) {
+  const wraps = document.querySelectorAll('.msg-wrap');
+  // Clear previous highlights first
+  wraps.forEach(w => {
+    w.classList.remove('search-dim');
+    w.querySelectorAll('.search-hl').forEach(h => {
+      const parent = h.parentNode;
+      parent.replaceChild(document.createTextNode(h.textContent), h);
+      parent.normalize();
+    });
+  });
+  if (!query.trim()) { document.getElementById('search-count').textContent = ''; return; }
+  const q = query.toLowerCase();
+  let matchCount = 0;
+  wraps.forEach(w => {
+    const bub = w.querySelector('.msg-bubble');
+    if (!bub) return;
+    const text = bub.textContent || '';
+    if (text.toLowerCase().includes(q)) {
+      matchCount++;
+      // Highlight occurrences in text nodes
+      highlightTextNodes(bub, q);
+    } else {
+      w.classList.add('search-dim');
+    }
+  });
+  document.getElementById('search-count').textContent = matchCount ? `${matchCount}` : 'None';
+}
+
+function highlightTextNodes(node, q) {
+  if (node.nodeType === 3) { // text node
+    const idx = node.textContent.toLowerCase().indexOf(q);
+    if (idx === -1) return;
+    const before = document.createTextNode(node.textContent.slice(0, idx));
+    const mark   = document.createElement('mark');
+    mark.className = 'search-hl';
+    mark.textContent = node.textContent.slice(idx, idx + q.length);
+    const after  = document.createTextNode(node.textContent.slice(idx + q.length));
+    const parent = node.parentNode;
+    parent.insertBefore(before, node);
+    parent.insertBefore(mark, node);
+    parent.insertBefore(after, node);
+    parent.removeChild(node);
+    // Recursively highlight remaining in after
+    highlightTextNodes(after, q);
+  } else if (node.childNodes) {
+    [...node.childNodes].forEach(c => highlightTextNodes(c, q));
+  }
+}
+
+/* ════════════════════════════════════════
+   4. SWIPE TO REPLY
+════════════════════════════════════════ */
+function setupSwipeReply(wrap, m) {
+  if (!wrap) return;
+  const isMe = wrap.classList.contains('me');
+
+  // Add hint icon
+  const hint = document.createElement('div');
+  hint.className = 'swipe-reply-hint';
+  hint.textContent = '↩';
+  wrap.appendChild(hint);
+
+  let startX = null;
+  let startY = null;
+  let swiping = false;
+
+  wrap.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    swiping = false;
+  }, { passive: true });
+
+  wrap.addEventListener('touchmove', e => {
+    if (startX === null) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    // Only horizontal swipes (dy < 30)
+    if (dy > 30) return;
+    // "me" messages: swipe left (dx < -50); "them": swipe right (dx > 50)
+    const triggered = isMe ? dx < -50 : dx > 50;
+    if (triggered) {
+      hint.classList.add('show');
+      swiping = true;
+    } else {
+      hint.classList.remove('show');
+    }
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', () => {
+    if (swiping) { startReply(m); }
+    hint.classList.remove('show');
+    startX = null;
+    swiping = false;
+  });
+}
+
+/* ════════════════════════════════════════
+   5. CUSTOM THEMES
+════════════════════════════════════════ */
+let activeTheme = localStorage.getItem('ghost-chat-theme') || 'midnight';
+(function applyStoredTheme() {
+  const overlay = document.getElementById('chat-overlay');
+  if (activeTheme && activeTheme !== 'midnight') {
+    overlay.dataset.theme = activeTheme;
+  }
+  // Mark active swatch
+  const sw = document.querySelector(`.theme-swatch[data-theme="${activeTheme}"]`);
+  if (sw) { document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active')); sw.classList.add('active'); }
+})();
+
+function openThemeModal() {
+  document.getElementById('theme-modal').classList.add('open');
+}
+function closeThemeModal() {
+  document.getElementById('theme-modal').classList.remove('open');
+}
+function applyTheme(name, swatchEl) {
+  activeTheme = name;
+  localStorage.setItem('ghost-chat-theme', name);
+  const overlay = document.getElementById('chat-overlay');
+  if (name === 'midnight') delete overlay.dataset.theme;
+  else overlay.dataset.theme = name;
+  document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+  swatchEl.classList.add('active');
+  showToast('Theme applied ✓');
+  setTimeout(closeThemeModal, 600);
+}
+
+/* ════════════════════════════════════════
+   6. REACTION COUNTER BOUNCE ANIMATION
+   — called from refreshReactionsUI after updating pills
+════════════════════════════════════════ */
+function popReactionPill(msgTs, emoji) {
+  const sel = `.msg-wrap[data-ts="${msgTs}"] .reaction-pill`;
+  document.querySelectorAll(sel).forEach(pill => {
+    if (pill.textContent.includes(emoji)) {
+      pill.classList.remove('popping');
+      // Force reflow to restart animation
+      void pill.offsetWidth;
+      pill.classList.add('popping');
+      pill.addEventListener('animationend', () => pill.classList.remove('popping'), { once: true });
+    }
+  });
+}
+
+/* ════════════════════════════════════════
+   🎂 AMI'S BIRTHDAY SURPRISE — October 10
+   (Countdown always visible; full surprise only on Oct 10)
+════════════════════════════════════════ */
+function startBdayCountdown() {
+  const cdDays  = document.getElementById('cd-days');
+  const cdHours = document.getElementById('cd-hours');
+  const cdMins  = document.getElementById('cd-mins');
+  const cdSecs  = document.getElementById('cd-secs');
+  const cdFooter= document.getElementById('cd-footer');
+  const card    = document.getElementById('bday-countdown-card');
+  if (!cdDays) return;
+
+  function getNextBirthday() {
+    const now = new Date();
+    let bday = new Date(now.getFullYear(), 9, 10, 0, 0, 0); // Oct 10 this year
+    if (now >= bday) bday = new Date(now.getFullYear() + 1, 9, 10, 0, 0, 0); // next year
+    return bday;
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const now = new Date();
+    const isToday = now.getMonth() === 9 && now.getDate() === 10;
+
+    if (isToday) {
+      // It's her birthday! Show celebration in the card
+      cdDays.textContent  = '🎂';
+      cdHours.textContent = '🎈';
+      cdMins.textContent  = '🎉';
+      cdSecs.textContent  = '✨';
+      if (cdFooter) cdFooter.innerHTML = '<span>Happy Birthday, Ami! 🥳</span>';
+      card.style.borderColor = 'rgba(249,115,22,0.6)';
+      card.style.background  = 'linear-gradient(135deg,rgba(249,115,22,0.15),rgba(236,72,153,0.15))';
+      return; // stop ticking
+    }
+
+    const diff = getNextBirthday() - now;
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+
+    // Animate flip on change
+    [cdDays, cdHours, cdMins, cdSecs].forEach((el, i) => {
+      const newVal = pad([days, hours, mins, secs][i]);
+      if (el.textContent !== newVal) {
+        el.style.transform = 'scale(1.15)';
+        setTimeout(() => { el.style.transform = ''; }, 150);
+        el.textContent = newVal;
+      }
+    });
+
+    // Update footer message based on how close we are
+    if (cdFooter) {
+      if (days === 0)       cdFooter.innerHTML = '🎉 <span>Tomorrow is the day!</span> Get ready!';
+      else if (days <= 7)   cdFooter.innerHTML = `Only <span>${days} days</span> to go! 🥳`;
+      else if (days <= 30)  cdFooter.innerHTML = `<span>${days} days</span> until her birthday ✨`;
+      else                  cdFooter.innerHTML = `Counting down to <span>her special day</span> ✨`;
+    }
+  }
+
+  tick(); // run immediately
+  setInterval(tick, 1000);
+}
+
+/* ════════════════════════════════════════
+   8. CAT SENTIMENT ANALYSIS
+════════════════════════════════════════ */
+const SENTIMENT_DICT = {
+  happy: ['love', 'happy', 'yay', 'great', 'good', 'awesome', 'haha', 'lmao', 'lol', 'nice', 'sweet', 'cute', '😂', '🤣', '❤️', '😍', '😊', '🥳', '💕', 'best', 'smile'],
+  sad: ['sad', 'bad', 'hate', 'terrible', 'worst', 'cry', 'depressed', 'sorry', 'miss', '😢', '😭', '💔', '😞', 'pain', 'hurts'],
+  angry: ['angry', 'mad', 'wtf', 'hate', 'fucking', 'bullshit', 'stupid', 'dumb', '😡', '🤬', '😤', '👿', 'idiot', 'hell'],
+  shocked: ['wow', 'omg', 'wtf', 'crazy', 'insane', 'shocked', 'gasp', '😮', '😱', '🤯', '😲', 'unbelievable']
+};
+
+let catStateTimer = null;
+
+function setCatState(state) {
+  const cat = document.getElementById('bg-cat');
+  if (!cat) return;
+  cat.className = state;
+  clearTimeout(catStateTimer);
+  if (state) {
+    catStateTimer = setTimeout(() => { cat.className = ''; }, 6000); // Back to sleep after 6s
+  }
+}
+
+function analyzeSentiment(text) {
+  if (!text) return;
+  const words = text.toLowerCase().split(/\s+/);
+  const chars = Array.from(text);
+  
+  let scores = { happy: 0, sad: 0, angry: 0, shocked: 0 };
+  let found = false;
+  
+  for (const emotion in SENTIMENT_DICT) {
+    for (const token of SENTIMENT_DICT[emotion]) {
+      if (words.includes(token) || chars.includes(token)) {
+        scores[emotion]++;
+        found = true;
+      }
+    }
+  }
+  
+  if (!found) return;
+  
+  let maxEmotion = null;
+  let maxScore = 0;
+  for (const emotion in scores) {
+    if (scores[emotion] > maxScore) {
+      maxScore = scores[emotion];
+      maxEmotion = emotion;
+    }
+  }
+  
+  if (maxEmotion) {
+    setCatState(maxEmotion);
+  }
+}
+
+(function checkBirthday() {
+  const now = new Date();
+  const isAmisBirthday = now.getMonth() === 9 && now.getDate() === 10; // Oct = month 9 (0-indexed)
+
+  // Start the countdown (always)
+  startBdayCountdown();
+
+  if (!isAmisBirthday) return; // rest only on her birthday
+
+  // Show banner
+  const banner = document.getElementById('bday-banner');
+  if (banner) banner.style.display = 'block';
+
+  // Glow the Kinny card
+  const card = document.getElementById('card-kinny');
+  if (card) card.classList.add('birthday');
+
+  // Swap avatar to cake + animate
+  const av = document.getElementById('login-av-kinny');
+  if (av) { av.textContent = '🎂'; av.classList.add('birthday'); }
+
+  // Show badge
+  const badge = document.getElementById('bday-badge');
+  if (badge) badge.style.display = 'block';
+
+  // Update label
+  const lbl = document.getElementById('kinny-label');
+  if (lbl) lbl.textContent = '🎉 Happy Birthday!';
+
+  // Launch confetti
+  launchBdayConfetti();
+})();
+
+function launchBdayConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;width:100%;height:100%';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const COLORS = ['#f97316','#ec4899','#a78bfa','#06b6d4','#22c55e','#fbbf24','#f43f5e'];
+  const pieces = Array.from({ length: 90 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    w: Math.random() * 10 + 5,
+    h: Math.random() * 6 + 4,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    speed: Math.random() * 2.5 + 1.5,
+    spin: Math.random() * 0.2 - 0.1,
+    angle: Math.random() * Math.PI * 2,
+    drift: Math.random() * 1.2 - 0.6,
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.speed;
+      p.x += p.drift;
+      p.angle += p.spin;
+      if (p.y > canvas.height + 20) { p.y = -20; p.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    // Run for ~8 seconds then fade out
+    if (frame < 480) {
+      requestAnimationFrame(draw);
+    } else {
+      let opacity = 1;
+      const fade = setInterval(() => {
+        opacity -= 0.05;
+        canvas.style.opacity = opacity;
+        if (opacity <= 0) { clearInterval(fade); canvas.remove(); }
+      }, 40);
+    }
+  }
+  draw();
+}
+
+/* ════════════════════════════════════════
+   7. EMOJI ANIMATIONS
+════════════════════════════════════════ */
+function spawnFloatingEmoji(emoji, x, y) {
+  const el = document.createElement('div');
+  el.className = 'floating-emoji';
+  el.textContent = emoji;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  
+  // Also trigger special effects if applicable
+  triggerEmojiEffect(emoji);
+
+  setTimeout(() => el.remove(), 1200);
+}
+
+function triggerEmojiEffect(text) {
+  if (text.includes('🎉') || text.includes('🎊')) {
+    launchBdayConfetti(); // reuse confetti
+  } else if (text.includes('❤️') || text.includes('💕') || text.includes('😍')) {
+    launchFloatingHearts();
+  } else if (text.includes('😂') || text.includes('🤣')) {
+    shakeScreen();
+  }
+}
+
+function launchFloatingHearts() {
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;';
+  document.body.appendChild(container);
+  
+  for (let i = 0; i < 20; i++) {
+    const heart = document.createElement('div');
+    heart.textContent = '❤️';
+    heart.style.cssText = `
+      position: absolute;
+      left: ${Math.random() * 100}vw;
+      bottom: -50px;
+      font-size: ${Math.random() * 20 + 20}px;
+      animation: floatUpHeart ${Math.random() * 2 + 3}s linear forwards;
+      opacity: 0;
+    `;
+    container.appendChild(heart);
+  }
+  
+  if (!document.getElementById('heart-style')) {
+    const style = document.createElement('style');
+    style.id = 'heart-style';
+    style.textContent = `
+      @keyframes floatUpHeart {
+        0% { transform: translateY(0) scale(0.5); opacity: 0; }
+        10% { opacity: 0.8; }
+        50% { transform: translateY(-50vh) translateX(${Math.random() * 50 - 25}px) scale(1.2); opacity: 0.8; }
+        100% { transform: translateY(-120vh) translateX(${Math.random() * 100 - 50}px) scale(1); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  setTimeout(() => container.remove(), 5500);
+}
+
+function shakeScreen() {
+  const overlay = document.getElementById('chat-overlay');
+  overlay.style.animation = 'screenShake 0.4s ease-in-out';
+  if (!document.getElementById('shake-style')) {
+    const style = document.createElement('style');
+    style.id = 'shake-style';
+    style.textContent = `
+      @keyframes screenShake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-8px) rotate(-1deg); }
+        40%, 80% { transform: translateX(8px) rotate(1deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  setTimeout(() => { overlay.style.animation = ''; }, 400);
+}
 
 /* ════════════════════════════════════════
    REGISTER SERVICE WORKER ON EVERY PAGE LOAD
