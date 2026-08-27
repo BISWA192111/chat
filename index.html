@@ -1027,7 +1027,7 @@
     </div>
 
     <!-- Birthday countdown reveal button -->
-    <div id="bday-reveal" onclick="this.style.display='none'; document.getElementById('bday-countdown-card').style.display='flex';">
+    <div id="bday-reveal" style="display:none;" onclick="this.style.display='none'; document.getElementById('bday-countdown-card').style.display='flex';">
       🎁 Tap to reveal a secret...
     </div>
 
@@ -2100,7 +2100,7 @@ function renderMsg(m) {
       bub.classList.add('big-emoji');
       bub.appendChild(document.createTextNode(text.replace(/\s+/g, '')));
       // Trigger special full-screen effects for newly received or sent emojis
-      if (m.ts > lastSeen - 1000) triggerEmojiEffect(text);
+      if (lastSeen > 0 && m.ts > lastSeen - 1000) triggerEmojiEffect(text);
     } else if (URL_REGEX.test(text)) {
       URL_REGEX.lastIndex = 0;
       bub.innerHTML = linkifyText(text);
@@ -2109,7 +2109,7 @@ function renderMsg(m) {
     }
     
     // Animate cat based on sentiment
-    if (m.ts > lastSeen - 1000) analyzeSentiment(text);
+    if (lastSeen > 0 && m.ts > lastSeen - 1000) analyzeSentiment(text);
   }
 
   // Footer
@@ -2990,6 +2990,11 @@ function startBdayCountdown() {
       if (cdFooter) cdFooter.innerHTML = '<span>Happy Birthday, Ami! 🥳</span>';
       card.style.borderColor = 'rgba(249,115,22,0.6)';
       card.style.background  = 'linear-gradient(135deg,rgba(249,115,22,0.15),rgba(236,72,153,0.15))';
+      
+      const revealBtn = document.getElementById('bday-reveal');
+      if (revealBtn && card.style.display === 'none' && revealBtn.style.display === 'none') {
+        revealBtn.style.display = 'flex';
+      }
       return; // stop ticking
     }
 
@@ -2998,6 +3003,18 @@ function startBdayCountdown() {
     const hours = Math.floor((diff % 86400000) / 3600000);
     const mins  = Math.floor((diff % 3600000)  / 60000);
     const secs  = Math.floor((diff % 60000)    / 1000);
+
+    const revealBtn = document.getElementById('bday-reveal');
+    if (days <= 1) {
+      // Within 1 day of birthday: make sure either the card or the reveal button is visible
+      if (revealBtn && card.style.display === 'none' && revealBtn.style.display === 'none') {
+        revealBtn.style.display = 'flex';
+      }
+    } else {
+      // Hide completely if it's more than 1 day away
+      if (revealBtn) revealBtn.style.display = 'none';
+      card.style.display = 'none';
+    }
 
     // Animate flip on change
     [cdDays, cdHours, cdMins, cdSecs].forEach((el, i) => {
