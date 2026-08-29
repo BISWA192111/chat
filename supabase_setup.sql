@@ -32,7 +32,7 @@ alter table public.messages add column if not exists reply_from text;
 
 -- Add push_sub to existing profiles table (safe — no data loss)
 alter table public.profiles add column if not exists push_sub text;
-
+alter table public.profiles add column if not exists disappearing_messages boolean default false;
 
 -- ─── 2. REACTIONS TABLE ───────────────────────────────────────
 create table if not exists public.reactions (
@@ -50,6 +50,7 @@ create table if not exists public.profiles (
   username   text primary key check (username in ('kinny', 'cosmic')),
   avatar_url text,
   push_sub   text,            -- Web Push subscription JSON (for mobile notifications)
+  disappearing_messages boolean default false,
   updated_at timestamptz default now()
 );
 

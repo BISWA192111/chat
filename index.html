@@ -1149,6 +1149,7 @@
         <div class="chat-header-name" id="peer-name">—</div>
         <div class="chat-header-sub" id="peer-status">online</div>
       </div>
+      <button class="hdr-btn" id="disappearing-toggle" title="Disappearing messages (24h)" onclick="toggleDisappearing()">⏳</button>
       <button class="hdr-btn" id="search-toggle" title="Search messages" onclick="toggleSearch()" style="display:none">🔍</button>
       <button class="hdr-btn" id="theme-toggle" title="Change theme" onclick="openThemeModal()" style="display:none">🎨</button>
       <button class="hdr-btn" title="Voice call" onclick="initiateCall('audio')">📞</button>
@@ -1423,6 +1424,8 @@ let profiles = {};
 let notifEnabled = true;
 let notifBannerTimer = null;
 let visibilityObserver = null;
+let disappearingEnabled = false;
+let profileSettings = {};
 
 // Action sheet state
 let asCurrentMsg = null;
@@ -1665,8 +1668,10 @@ async function loadProfilesForLogin() {
   if (!data) return;
   data.forEach(p => {
     profiles[p.username] = p.avatar_url;
+    profileSettings[p.username] = p;
     updateAvatarEl(document.getElementById(`login-av-${p.username}`), p.username, p.avatar_url);
   });
+  checkDisappearingState();
 }
 function updateAvatarEl(el, username, url) {
   if (!el) return;
@@ -1705,8 +1710,25 @@ async function loginAs(user) {
 async function loadProfiles() {
   const { data } = await db.from('profiles').select('*');
   if (!data) return;
-  data.forEach(p => { profiles[p.username] = p.avatar_url; });
+  data.forEach(p => { 
+    profiles[p.username] = p.avatar_url; 
+    profileSettings[p.username] = p;
+  });
+  checkDisappearingState();
   updateAvatarEl(document.getElementById('peer-avatar'), them, profiles[them]);
+}
+
+function checkDisappearingState() {
+  const oldState = disappearingEnabled;
+  disappearingEnabled = !!(profileSettings['kinny']?.disappearing_messages || profileSettings['cosmic']?.disappearing_messages);
+  const btn = document.getElementById('disappearing-toggle');
+  if (btn) btn.style.color = disappearingEnabled ? 'var(--chat-accent)' : '';
+  
+  // If state changed by peer, reload messages
+  if (me && oldState !== disappearingEnabled) {
+    showToast(disappearingEnabled ? 'Disappearing messages ON (by peer)' : 'Disappearing messages OFF (by peer)');
+    loadMessages();
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1714,11 +1736,26 @@ async function loadProfiles() {
 ════════════════════════════════════════ */
 async function loadMessages() {
   const area = document.getElementById('messages-area');
-  area.innerHTML = '<div class="sys-msg">🔒 Private chat. Messages sync in real time.</div>';
+  let topHtml = '<div class="sys-msg">🔒 Private chat. Messages sync in real time.</div>';
+  if (disappearingEnabled) {
+    topHtml += '<div class="sys-msg" style="color: var(--chat-accent); margin-top: 4px;">⏳ Disappearing messages (24h) are ON</div>';
+  }
+  area.innerHTML = topHtml;
   lastSeen = 0; reactionsCache = {};
 
+  const GLOBAL_CUTOFF = 1787976667000; // Permanently hide messages before this timestamp (2026-08-29 09:41)
+  const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+  
+  let msgQuery = db.from('messages').select('*').order('ts', { ascending: true });
+  
+  if (disappearingEnabled) {
+    msgQuery = msgQuery.gte('ts', Math.max(GLOBAL_CUTOFF, twentyFourHoursAgo));
+  } else {
+    msgQuery = msgQuery.gte('ts', GLOBAL_CUTOFF);
+  }
+
   const [msgRes, reactRes] = await Promise.all([
-    db.from('messages').select('*').order('ts', { ascending: true }),
+    msgQuery,
     db.from('reactions').select('*')
   ]);
   if (msgRes.error) { showToast('Failed to load messages'); return; }
@@ -1732,6 +1769,32 @@ async function loadMessages() {
   area.scrollTop = area.scrollHeight;
   markPeerMessagesSeen(msgRes.data || []);
 }
+
+async function toggleDisappearing() {
+  if (!db || !me) return;
+  const newState = !disappearingEnabled;
+  
+  // Optimistic update
+  profileSettings[me] = profileSettings[me] || {};
+  profileSettings[me].disappearing_messages = newState;
+  checkDisappearingState();
+  
+  showToast(newState ? 'Disappearing messages (24h) ON for both' : 'Disappearing messages OFF for both');
+  await db.from('profiles').update({ disappearing_messages: newState }).eq('username', me);
+}
+
+// Periodically remove old messages from the DOM if disappearing is enabled
+setInterval(() => {
+  if (disappearingEnabled && me) {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    document.querySelectorAll('.msg-wrap').forEach(wrap => {
+      const ts = Number(wrap.dataset.ts);
+      if (ts < cutoff) {
+        wrap.remove();
+      }
+    });
+  }
+}, 60000); // Check every minute
 
 /* ════════════════════════════════════════
    READ RECEIPTS
@@ -2254,7 +2317,16 @@ function subscribeRealtime() {
   })
 
   .on('postgres_changes', { event:'UPDATE', schema:'public', table:'profiles' }, payload => {
-    const p = payload.new; profiles[p.username] = p.avatar_url;
+    const p = payload.new; 
+    profiles[p.username] = p.avatar_url;
+    
+    // Check if disappearing setting changed
+    const oldSetting = profileSettings[p.username]?.disappearing_messages;
+    profileSettings[p.username] = p;
+    if (oldSetting !== p.disappearing_messages) {
+      checkDisappearingState();
+    }
+
     document.querySelectorAll(`.msg-wrap .msg-av`).forEach(av => {
       const wrap = av.closest('.msg-wrap');
       if (wrap && (wrap.dataset.from === p.username || (wrap.classList.contains('me') && p.username === me))) {
