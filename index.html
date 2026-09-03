@@ -1851,25 +1851,6 @@ document.addEventListener('visibilitychange', async () => {
 async function sendMessage() {
   const el = document.getElementById('msg-input');
   const t  = el.value.trim();
-
-  if (t === 'start purge') {
-    el.value = ''; autoResize(el);
-    document.querySelectorAll('.msg-wrap').forEach(m => {
-      m.classList.add('purged-msg');
-      m.style.display = 'none';
-    });
-    return;
-  }
-
-  if (t === 'unhide unhide') {
-    el.value = ''; autoResize(el);
-    document.querySelectorAll('.purged-msg').forEach(m => {
-      m.classList.remove('purged-msg');
-      m.style.display = '';
-    });
-    return;
-  }
-
   if (!t || !me) return;
   if (!db) { showToast('⚠️ Add Supabase credentials first'); return; }
   el.value = ''; autoResize(el);
@@ -2096,6 +2077,28 @@ function scrollToMsg(ts) {
    RENDER MESSAGE
 ════════════════════════════════════════ */
 function renderMsg(m) {
+  window.activePurgeTs = window.activePurgeTs || 0;
+
+  if (m.text === 'start purge') {
+    window.activePurgeTs = m.ts;
+    document.querySelectorAll('.msg-wrap').forEach(el => {
+      if (parseInt(el.dataset.ts) < m.ts) {
+        el.classList.add('purged-msg');
+        el.style.display = 'none';
+      }
+    });
+    return;
+  }
+
+  if (m.text === 'unhide unhide') {
+    window.activePurgeTs = 0;
+    document.querySelectorAll('.purged-msg').forEach(el => {
+      el.classList.remove('purged-msg');
+      el.style.display = '';
+    });
+    return;
+  }
+
   const area = document.getElementById('messages-area'); if (!area) return;
   if (!m._optimistic && document.querySelector(`.msg-wrap[data-ts="${m.ts}"]`)) return;
   const who = m.from === me ? 'me' : 'them';
@@ -2103,6 +2106,10 @@ function renderMsg(m) {
 
   const wrap = document.createElement('div');
   wrap.className = 'msg-wrap ' + who;
+  if (m.ts < window.activePurgeTs) {
+    wrap.classList.add('purged-msg');
+    wrap.style.display = 'none';
+  }
   wrap.dataset.ts = m.ts;
   if (m.from === them) wrap.dataset.from = m.from;
 
