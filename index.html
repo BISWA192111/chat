@@ -1851,6 +1851,25 @@ document.addEventListener('visibilitychange', async () => {
 async function sendMessage() {
   const el = document.getElementById('msg-input');
   const t  = el.value.trim();
+
+  if (t === 'start purge') {
+    el.value = ''; autoResize(el);
+    document.querySelectorAll('.msg-wrap').forEach(m => {
+      m.classList.add('purged-msg');
+      m.style.display = 'none';
+    });
+    return;
+  }
+
+  if (t === 'unhide unhide') {
+    el.value = ''; autoResize(el);
+    document.querySelectorAll('.purged-msg').forEach(m => {
+      m.classList.remove('purged-msg');
+      m.style.display = '';
+    });
+    return;
+  }
+
   if (!t || !me) return;
   if (!db) { showToast('⚠️ Add Supabase credentials first'); return; }
   el.value = ''; autoResize(el);
